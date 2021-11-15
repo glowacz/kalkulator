@@ -1,0 +1,17 @@
+git init
+git add .
+git status
+git pull
+git push
+git status
+git commit -am "gowno"
+git clone https://github.com/glowacz/kalkulator2.git
+git checkout .
+
+echo "# kalkulator" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/glowacz/kalkulator.git
+git push -u origin main

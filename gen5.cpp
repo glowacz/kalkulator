@@ -2,12 +2,10 @@
 #define ll long long
 using namespace std;
 
-const int N = 30000;
-const int N1 = 30;
-const int N2 = 300;
+const int N = 3000;
 const int B = 10;
 const int E = 4;
-const int O = 1000;
+const int O = 10000;
 
 string op = "+*/%^";
 int sys = 10, nr_op, l_op, n, m;
@@ -25,8 +23,6 @@ int main(){
     uniform_int_distribution<> wyb_op(2, 2);
     uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<> dl(N-B, N);
-    uniform_int_distribution<> dl1(N1-B, N1);
-    uniform_int_distribution<> dl2(N1, N2);
     uniform_int_distribution<> distr_b(1, B);
     uniform_int_distribution<> distr_e(1, E);
     uniform_int_distribution<> wyb_cy(0, 15);
@@ -42,10 +38,7 @@ int main(){
     n = dl(eng);
     m = dl(eng);
 
-    n = dl1(eng); m = dl1(eng); //dl 20-30
-    //n = dl2(eng); m = dl2(eng); //dl 280-300
-
-    //n = N-N2, m = N; //zawsze duze
+    //n = N, m = N; //zawsze dosyc duze
 
     //n = distr_e(eng); m = distr_e(eng); //malutkie liczby
     //n = distr_b(eng); m = distr_b(eng); //male liczby

@@ -27,7 +27,7 @@ char *read(FILE* file, size_t base_len){
 
 int main()
 {
-    FILE *in = fopen("in_big.txt", "r");
+    FILE *in = fopen("in_hand.txt", "r");
     FILE *out = fopen("pom.out", "w");
     //FILE *out = stdout;
     char *a, *b, *c, op, *line, *bin;

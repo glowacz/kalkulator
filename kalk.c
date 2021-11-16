@@ -3,7 +3,7 @@
 #include <string.h>
 #include <limits.h>
 #include <malloc.h>
-#define A 2
+#define A 9
 #define L 2
 #define BUF 100000
 
@@ -26,6 +26,33 @@ char *read(FILE* file, size_t base_len){
     return realloc(str, sizeof(*str)*len);
 }
 
+void str_cpy(char *a, char *b){ //aktualnie nieuzywane (jest ewidentnie wolniejsze)
+    int i = 0;
+    while(b[i] != '\0'){
+        a[i] = b[i];
+        i++;
+    }
+    a[i] = '\0';
+}
+
+int str_len(char *a){
+    int i = 0, len = 0;
+    while(a[i] != '\0') i++;
+    return i;
+}
+
+int str_cmp(char *a, char *b){
+    int i = 0;
+    while(a[i] != '\0' && b[i] != '\0'){
+        if(a[i] < b[i]) return -1;
+        if(a[i] > b[i]) return 1;
+        i++;
+    }
+    if(a[i] == '\0' && b[i] == '\0') return 0;
+    if(a[i] == '\0') return -1;
+    return 1;
+}
+
 void let_to_num(char *str){
     int i;
     for(i=0; i<strlen(str); i++){
@@ -42,8 +69,6 @@ void num_to_let(char *str){
 
 int input_analysis(char *a, char *b, int sys, char op){
     //printf("hello\n");
-    if(a[0] == '0') return 3;
-    if(b[0] == '0') return 3;
     //printf("hello2\n");
     int n = strlen(a), m = strlen(b);
     int is_zero = 1, good_sys = 1;
@@ -61,6 +86,8 @@ int input_analysis(char *a, char *b, int sys, char op){
     num_to_let(b);
     if( good_sys == 0 ) return 1;
     if( (op == '/' || op == '%') && is_zero ) return 2;
+    //if(a[0] == '0') return 3;
+    //if(b[0] == '0') return 3;
     return 0;
 }
 
@@ -83,7 +110,7 @@ int pow_(int b, int e){
     return res;
 }
 
-char *add(char *a, char *b, char *c, int sys){
+char *add(char *a, char *b, char **c1, int sys){
     int n, m, i, j_a, j_b;
     if(strlen(a) >= strlen(b)){
         n = strlen(a);
@@ -101,7 +128,8 @@ char *add(char *a, char *b, char *c, int sys){
     let_to_num(a);
     let_to_num(b);
 
-    //char *c = malloc(n+A);
+    *c1 = malloc(n+A);
+    char *c = *c1;
     int cy[n+A];
     //char *c = malloc(n+A);
 
@@ -138,7 +166,7 @@ char *add(char *a, char *b, char *c, int sys){
     return c;
 }
 
-char **mult(char *a, char *b, char **c, int sys){
+char *mult(char *a, char *b, char **c1, int sys){
     int n, m, i, j, i_c;
     n = strlen(a);
     m = strlen(b);
@@ -147,7 +175,8 @@ char **mult(char *a, char *b, char **c, int sys){
     let_to_num(b);
 
     int cy_a[n+A], cy_b[m+A], cy[n+m+A], cy_main[n+m+A];
-    //char *c = malloc(n+m+A);
+    *c1 = malloc(n+m+A);
+    char *c = *c1;
 
     for(i=0; i<n; i++) cy_a[i] = a[i]-'0';
     for(i=0; i<m; i++) cy_b[i] = b[i]-'0';
@@ -173,30 +202,33 @@ char **mult(char *a, char *b, char **c, int sys){
             }
         }
     }
-    for(i=0; i<n+m; i++) (*c)[i] = cy_main[i]+'0';
-    (*c)[n+m] = '\0';
+    for(i=0; i<n+m; i++) c[i] = cy_main[i]+'0';
+    c[n+m] = '\0';
     num_to_let(a);
     num_to_let(b);
-    num_to_let(*c);
+    num_to_let(c);
 
-    //while(c[0] == '0') c++;
-    //if(strlen(c) == 0) c--;
+    while(c[0] == '0') c++;
+    if(strlen(c) == 0) c--;
 
     return c;
 }
 
-/*char *subtr(char *a, char *b, int sys){
+char *subtr(char *a, char *b, char **c1, int sys){
     int n, m, i, j_b;
     n = strlen(a);
     m = strlen(b);
     j_b = m-1;
-    int cy[n+1];
-    char *a1 = malloc(n+A), *c = malloc(n+A);
+    int cy[n+A];
+    *c1 = malloc(n+A);
+    char *c = *c1, *a1 = malloc(n+A);
 
     let_to_num(a);
     let_to_num(b);
 
-    strcpy(a1, a);
+    str_cpy(a1, a);
+    //strcpy(a1, a);
+    //a1 = a;
 
     for(i=n; i >= 0; i--) cy[i] = 0;
 
@@ -212,73 +244,149 @@ char **mult(char *a, char *b, char **c, int sys){
         j_b--;
     }
     c[n] = '\0';
+    
     num_to_let(a);
     num_to_let(b);
     num_to_let(c);
+    
     while(c[0] == '0') c++;
     if(strlen(c) == 0) c--;
+    
     free(a1);
+    
     return c;
 }
 
-char *div_pom(char *a, char *b, int sys, int *cy){
-    char *c = malloc(strlen(a)+A);
-    strcpy(c, b);
+char *div_pom(char *a, char *b, char **c1, int sys, int *cy){
+    //char *a = *a1;
+    //char *c1 = malloc(strlen(a)+A);
+    //char *tmp1 = malloc(strlen(a)+A);
+    char tmp1[strlen(a)+A];
+    char *tmp = tmp1;
+    char *c = *c1;
+    //c[0] = '\0';
+    str_cpy(c, b);
     int i = 1;
+    
     while(a[0] == '0') a++;
-    while(strlen(c) < strlen(a) || (strlen(c) == strlen(a) && strcmp(a, c) > 0) ){
-        c = add(c, b, sys);
+    
+    while( strlen(c) < strlen(a) || (strlen(c) == strlen(a) && str_cmp(c, a) < 0) )
+    {
+        tmp = add(c, b, &tmp, sys);
+        //printf("dl tmp = %i\n", strlen(tmp));
+        str_cpy(c, tmp);
+        //printf("dl tmp = %i\n", strlen(tmp));
         i++;
+        //printf("akt (c) = %s\ni = %i\n", c, i);
+        //printf("dl c = %i\ndl a = %i\n", strlen(c), strlen(a));
     }
-    if(strcmp(a, c) != 0) {
+    
+    if(str_cmp(a, c) != 0) 
+    {
         i--;
-        c = subtr(c, b, sys);
+        tmp = subtr(c, b, &tmp, sys);
+        str_cpy(c, tmp);
     }
+    
     *cy = i;
+    
+    //*a1 = c;
+    //free(c1);
+
+    //printf("div pom przed free\n");
+    //printf("wynik: %s\n", c);
+    //printf("wynik(cyfra nad kreska): %i\n", i);
+
+    //free(tmp1);
+
+    //printf("div pom po free\n");
+
+    /*if(i == 0){
+        c[0] = '0';
+        c[1] = '\0';
+    }*/
+    
     return c;
 }
 
-char *div_(char *a, char *b, int sys){
+char *div_(char *a, char *b, char **c1, int sys)
+{
     int n, m, i, j, i_c;
     n = strlen(a);
     m = strlen(b);
 
-    int cy_a[n+A], cy_b[m+A], cy = 0, cy_curr[n+A];
-    char *c = malloc(n+A), *curr = malloc(m+A), *prev = malloc(m+A), ch;
+    int cy_a[n+A], cy_b[m+A], cy_curr[n+A], cy = 0;
+    //*c1 = (char *) realloc(*c1, n+A);
+    *c1 = malloc(n+A);
+    //char *curr1 = malloc(m+A), *prev1 = malloc(m+A), *temp1 = malloc(m+A), ch;
+    char curr1[m+A], prev1[m+A], temp1[m+A], ch; //bylo dynamicznie, ale czasem pojawial sie problem z free
+    char *c = *c1, *curr = curr1, *prev = prev1, *temp = temp1;
 
     for(i=0; i<n; i++) c[i] = '0';
 
-    for(i=m-1; i<n; i++){
+    //printf("hello\n");
 
-        if(i == m-1){
+    for(i=m-1; i<n; i++)
+    {
+        //printf("i=%i\n", i);
+        if(i == m-1)
+        {
             ch = a[i+1];
             a[i+1] = '\0';
-            strcpy(curr, a);
+            str_cpy(curr, a);
+            //curr[strlen(curr)] = '\0';
+            curr[strlen(a)] = '\0';
         }
-        else{
+        else
+        {
             ch = a[i+1];
             a[i+1] = '\0';
         }
-        strcpy(prev, curr);
-        curr = div_pom(curr, b, sys, &cy);
+        //printf("curr=%s\n", curr);
+        str_cpy(prev, curr);
+        prev[strlen(prev)] = '\0';
+        //curr = div_pom(&curr, b, sys, &cy);
+        temp = div_pom(curr, b, &temp, sys, &cy);
+        str_cpy(curr, temp);
+        //curr[strlen(curr)] = '\0';
+        curr[strlen(temp)] = '\0';
+        //printf("po pomnozeniu: %s\n", curr);
         c[i] = cy+'0';
-        curr = subtr(prev, curr, sys);
+        //printf("cyfra do wyniku: %i\n", cy);
+        //curr = subtr(prev, curr, sys);
+        temp = subtr(prev, curr, &temp, sys);
+        str_cpy(curr, temp);
+        curr[strlen(temp)] = '\0';
+        //printf("po odjeciu: %s\n", curr);
+        //printf("strlen po odjeciu: %li\n", strlen(curr));
         a[i+1] = ch;
+        //printf("cyfra do dopisania: %c\n", ch);
+        int len = strlen(curr);
         curr[strlen(curr)] = ch;
-        curr[strlen(curr)] = '\0';
+        //printf("strlen po dopisaniu: %li\n", strlen(curr));
+        curr[len+1] = '\0';
+        //printf("po dopisaniu: %s\n", curr);
     }
     
     c[n] = '\0';
     num_to_let(c);
 
-    while(c[0] == '0') {
-        c++;
-    }
+    while(c[0] == '0') c++;
     if(strlen(c) == 0) c--;
+
+    //printf("div_ przed free\n");
+    //printf("c=%s\n", c);
+
+    /*free(curr1);
+    free(prev1);
+    free(temp1);*/
+
+    //printf("div_ po free\n");
+    
     return c;
 }
 
-char *mod(char *a, char *b, int sys){
+/*char *mod(char *a, char *b, int sys){
     char *c;
     c = div_(a, b, sys);
     c = mult(c, b, sys);
@@ -316,13 +424,13 @@ char *num_conv(char *a, char *b, int sys, int sys2){
     int cy[n*4+A];
     char *akt = malloc(n+A), *c;
     char *wyn = malloc(n*4+A), *pom = malloc(n*4+A), *tmp = malloc(n+A);
-    strcpy(akt, a);
+    str_cpy(akt, a);
 
     while( akt[0] != '0' ){
         c = mod(akt, b, sys);
         pom[i] =  dig_conv(c, sys, sys2)+'0';
         tmp = div_(akt, b, sys);
-        strcpy(akt, tmp);
+        str_cpy(akt, tmp);
         i++;
     }
     int m = i;
@@ -337,43 +445,33 @@ char *num_conv(char *a, char *b, int sys, int sys2){
 
 char *qck_pow(char *b, char *e, int sys){
     char *pom = malloc(strlen(e)+A);
-    if(strcmp(e, "0") == 0) return "1";
-    if(strcmp(e, "1") == 0) {
-        strcpy(pom, b);
+    if(str_cmp(e, "0") == 0) return "1";
+    if(str_cmp(e, "1") == 0) {
+        str_cpy(pom, b);
         return pom;
     }
     else if(sys == 2){
         pom = div_(e, "10", sys);
-        if(strcmp(mult(pom, "10", sys), e) == 0) return mult(qck_pow(b, pom, sys), qck_pow(b, pom, sys), sys);
+        if(str_cmp(mult(pom, "10", sys), e) == 0) return mult(qck_pow(b, pom, sys), qck_pow(b, pom, sys), sys);
         else return mult(qck_pow(b, subtr(e, "1", sys), sys), b, sys);
     }
     else{
         pom = div_(e, "2", sys);
-        if(strcmp(mult(pom, "2", sys), e) == 0) return mult(qck_pow(b, pom, sys), qck_pow(b, pom, sys), sys);
+        if(str_cmp(mult(pom, "2", sys), e) == 0) return mult(qck_pow(b, pom, sys), qck_pow(b, pom, sys), sys);
         else return mult(qck_pow(b, subtr(e, "1", sys), sys), b, sys);
     }
 }*/
 
+//int main(int argc, char *argv[])
 int main()
 {
     FILE *in = fopen("in_tes.txt", "r");
     FILE *out = fopen("wzo.out", "w");
-    char *a, *b, *bin, *line, op, ch, *c;
+    char *a, *b, *c, *bin, *line, op, ch;
     int sys, sys1, sys2, n, m, line_len, err;   
     size_t bufsize = BUF;
     //FILE *out = stdout;
     while(1){
-    //char *a, *b, *c, op, *line = malloc(10);
-    //char *a = malloc(bufsize*sizeof(char)), *b = malloc(bufsize*sizeof(char)), *bin = malloc(bufsize*sizeof(char)), 
-    //*c = malloc(bufsize*sizeof(char)), *line = malloc(bufsize*sizeof(char)), op, ch;
-    //char *a = malloc(BUF), *b = malloc(BUF), *bin = malloc(BUF), 
-    //*c = malloc(BUF), *line = malloc(BUF), op, ch;
-    //FILE *in = stdin;
-    /*while(ch != '\n'){
-        line[i++] = ch;
-        putchar(ch);
-        ch = getc(in);
-    }*/
     line = read(in, L);
     bin = read(in, L);
     line_len = strlen(line);
@@ -415,12 +513,6 @@ int main()
         //działanie
         if(line_len == 4) sys = line[2]-'0';
         else sys = 10+line[3]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
-        
-        /*getline(&a, &bufsize, in);
-        getline(&bin, &bufsize, in);
-        getline(&b, &bufsize, in);
-        getline(&bin, &bufsize, in);
-        getline(&bin, &bufsize, in);*/
 
         a = read(in, L);
         bin = read(in, L);
@@ -451,31 +543,31 @@ int main()
             continue;
         }
     }
-
-     /*printf("Memory allocated for a: %li bytes\n", malloc_usable_size(a));
-     printf("Memory allocated for b: %li bytes\n", malloc_usable_size(b));
-     printf("Memory allocated for c: %li bytes\n", malloc_usable_size(c));*/
     
     //printf("a=%s\nb=%s\n", a, b);
     
     //if(op == '+') add(a, b, sys, out);
-    if(op == '+') {
-        if(n >= m) c = malloc(n+A);
-        else c = malloc(m+A);
-        //add(a, b, c, sys);
-        //fprintf(out, "%s\n\n\n", c);
-        //bool non0 = 0;
-        fprintf(out, "%s\n\n\n", add(a, b, c, sys));
+    if(op == '+') 
+    {
+        fprintf(out, "%s\n\n\n", add(a, b, &c, sys));
     }
-    else if(op == '*') {
-        c = malloc(n+m+A);
-        fprintf(out, "%s\n\n\n", *(mult(a, b, &c, sys)));
+    else if(op == '-') 
+    {
+        fprintf(out, "%s\n\n\n", subtr(a, b, &c, sys));
     }
-    /*else if(op == '/') fprintf(out, "%s\n\n\n", div_(a, b, sys));
-    else if(op == '^') {
+    else if(op == '*') 
+    {
+        //c = malloc(n+m+A);
+        fprintf(out, "%s\n\n\n", mult(a, b, &c, sys));
+    }
+    else if(op == '/') 
+    {
+        fprintf(out, "%s\n\n\n", div_(a, b, &c, sys));
+    }
+    /*else if(op == '^') {
         //let_to_num(a);
         //let_to_num(b);
-        //if( strcmp(b, "0") == 0 ) return a;
+        //if( str_cmp(b, "0") == 0 ) return a;
         c = qck_pow(a, b, sys);
         //num_to_let(c);
         fprintf(out, "%s\n\n\n", c);
@@ -485,13 +577,16 @@ int main()
         b = sys_conv(sys1, sys2);
         fprintf(out, "%s\n\n\n", num_conv(a, b, sys1, sys2));
     }*/
-    //free(c);
+    
+    printf("main przed free\n");
     free(a);
     free(b);
-    free(c);
+    //printf("main przed free c\n");
+    //free(c); //czasami (rzadko) przy div_ byl problem z free(c)
+    //printf("main po free c\n");
     free(line);
     free(bin);
-    //printf("%i", bin[0] == EOF);
+    printf("main po free\n");
     }
     return 0;
 }

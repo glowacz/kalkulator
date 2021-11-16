@@ -2,7 +2,7 @@
 
 gcc -o3 -o wzo kalk.c
 g++ -o3 -o bru kalk_cpp.cpp
-g++ -o3 -o gen kalk_gen.cpp
+g++ -o3 -o gen gen.cpp
 
 for i in {1..100000}
 do

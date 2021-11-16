@@ -2,17 +2,19 @@
 #define ll long long
 using namespace std;
 
-//const long long N = 1000000000000000000; 10^\18
-//const long long N = 1000000000; //10^9
-const long long N = 2000000000;
-const long long B = 100;
-const long long E = 9;
-const long long O = 10000;
-//const long long N = 1000;
+const ll N = 1000000000000000000; //10^\18
+//const ll N = 1000000000; //10^9
+//const ll N = 2000000000;
+//const ll N = 20000;
+const ll M = 2000;
+const ll B = 100;
+const ll E = 9;
+const ll O = 1000;
+//const ll N = 1000;
 
-string op = "+/%*^";
+string op = "+*-/%^";
 int sys = 10, nr_op, l_op;
-long long a, b;
+ll a, b;
 string a1, b1;
 
 random_device rd;
@@ -62,31 +64,45 @@ int main(){
     l_op = O;
     //l_op = 2;
     uniform_int_distribution<> wyb_op(3, 3);
-    uniform_int_distribution<> wyb_sys(2, 16);
-    uniform_int_distribution<long long> distr(1, N);
-    uniform_int_distribution<long long> distr_b(0, B);
-    uniform_int_distribution<long long> distr_e(0, E);
+    uniform_int_distribution<> wyb_sys(2, 2);
+    uniform_int_distribution<ll> distr(N/M, N);
+    uniform_int_distribution<ll> distr_small(1, M);
+    uniform_int_distribution<ll> distr_b(0, B);
+    uniform_int_distribution<ll> distr_e(0, E);
+    uniform_int_distribution<ll> distr_tiny(1, 9);
+    
     for(int i=0; i<l_op; i++){
-    //uniform_int_distribution<long long> distr_small(1, N/100000);
-    //uniform_int_distribution<long long> distr_small(1, M);
 
     sys = wyb_sys(eng);
     a = distr(eng);
-    //a = 2;
-    //b = distr_small(eng);
     b = distr(eng);
+    //b = distr_small(eng);
+    //a = 0;
 
     nr_op = wyb_op(eng);
 
+    /*while( a % b == 0 ) { //nie zachodzi podzielność
+        a = distr_small(eng); b = distr_small(eng);
+    }*/
+    
+    //b = distr_small(eng)*10; a = distr_small(eng)*b; b = a/b;
+    //b = distr_small(eng); a = distr_small(eng)*b; //zachodzi podzielność
+    //a = distr_small(eng); b = distr_small(eng); //male liczby
+    //b = distr_tiny(eng); //b 1-cyfrowe (wynik dzielenia wielocyfrowy)
+    //b = distr_tiny(eng); b = a/b; //wynik dzielenia 1-cyfrowy
+    //a = distr_tiny(eng); b = distr_tiny(eng); //liczby jednocyfrowe
     //a = distr_e(eng); b = distr_e(eng); //malutkie liczby
-    //a = distr_b(eng); b = distr_b(eng); //male liczby
+    //a = distr_b(eng); b = distr_b(eng); //b male liczby
 
     if(op[nr_op] == '^'){
         a = distr_b(eng);
         b = distr_e(eng);
     }
 
-    if(nr_op%2 == 1 && a < b) swap(a, b);
+    if( nr_op == 2 && a < b ) swap(a, b);
+    //if( nr_op >=2 && nr_op <= 4 && a < b ) swap(a, b);
+    
+    
     //cout <<"a = "<<a<<",   b = "<<b<<"\n";
     //if(nr_op == 3) a *= b;
 

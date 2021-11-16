@@ -273,8 +273,8 @@ char *subtr(char *a, char *b, char **c1, int sys){
 char *div_pom(char *a, char *b, char **c1, int sys, int *cy){
     //char *a = *a1;
     //char *c1 = malloc(strlen(a)+A);
-    //char *tmp1 = malloc(strlen(a)+A);
-    char tmp1[strlen(a)+A];
+    char *tmp1 = malloc(strlen(a)+A);
+    //char tmp1[strlen(a)+A];
     char *tmp = tmp1;
     char *c = *c1;
     //c[0] = '\0';
@@ -310,7 +310,7 @@ char *div_pom(char *a, char *b, char **c1, int sys, int *cy){
     //printf("wynik: %s\n", c);
     //printf("wynik(cyfra nad kreska): %i\n", i);
 
-    //free(tmp1);
+    free(tmp1);
 
     //printf("div pom po free\n");
 
@@ -331,8 +331,8 @@ char *div_(char *a, char *b, char **c1, int sys)
     int cy_a[n+A], cy_b[m+A], cy_curr[n+A], cy = 0;
     //*c1 = (char *) realloc(*c1, n+A);
     *c1 = malloc(n+A);
-    //char *curr1 = malloc(m+A), *prev1 = malloc(m+A), *temp1 = malloc(m+A), ch;
-    char curr1[m+A], prev1[m+A], temp1[m+A], ch; //bylo dynamicznie, ale czasem pojawial sie problem z free
+    char *curr1 = malloc(m+A), *prev1 = malloc(m+A), *temp1 = malloc(m+A), ch;
+    //char curr1[m+A], prev1[m+A], temp1[m+A], ch; //bylo dynamicznie, ale czasem pojawial sie problem z free
     char *c = *c1, *curr = curr1, *prev = prev1, *temp = temp1;
 
     for(i=0; i<n; i++) c[i] = '0';
@@ -390,9 +390,9 @@ char *div_(char *a, char *b, char **c1, int sys)
     //printf("div_ przed free\n");
     //printf("c=%s\n", c);
 
-    /*free(curr1);
+    free(curr1);
     free(prev1);
-    free(temp1);*/
+    free(temp1);
 
     //printf("div_ po free\n");
     

@@ -9,9 +9,9 @@ do
     ./gen > in_tes.txt
     #./wzo < kalk.in > wzo.out
     #./bru < kalk.in > bru.out
-    ./wzo
+    ./wzo in_tes.txt
     ./bru > bru.out
-    diff wzo.out bru.out || break
+    diff -q wzo.out bru.out || break
     echo "TEST $i   OK"
     #sleep 1s
 done

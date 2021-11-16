@@ -6,7 +6,7 @@ g++ -o3 -o gen gen_big.cpp
 for i in {1..100000}
 do
     ./gen > in_big.txt
-    ./wzo
+    ./wzo in_big.txt
     a=($(wc -l in_big.txt))
     ln_in=${a[0]}
     op_cnt=$(( ln_in / 7 ))

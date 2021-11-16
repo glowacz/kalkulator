@@ -2,12 +2,12 @@
 #define ll long long
 using namespace std;
 
-const int N = 30000;
+const int N = 3000;
 const int N1 = 30;
 const int N2 = 300;
 const int B = 10;
 const int E = 4;
-const int O = 1000;
+const int O = 100;
 
 string op = "+*/%^";
 int sys = 10, nr_op, l_op, n, m;
@@ -20,9 +20,9 @@ int main(){
     srand(time(0));
     l_op = rand()%O+1;
     l_op = O;
-    l_op = 5;
+    //l_op = 5;
     
-    uniform_int_distribution<> wyb_op(2, 2);
+    uniform_int_distribution<> wyb_op(0, 3);
     uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<> dl(N-B, N);
     uniform_int_distribution<> dl1(N1-B, N1);
@@ -42,7 +42,7 @@ int main(){
     n = dl(eng);
     m = dl(eng);
 
-    n = dl1(eng); m = dl1(eng); //dl 20-30
+    //n = dl1(eng); m = dl1(eng); //dl 20-30
     //n = dl2(eng); m = dl2(eng); //dl 280-300
 
     //n = N-N2, m = N; //zawsze duze
@@ -61,7 +61,8 @@ int main(){
     for(int i=1; i<m; i++) b1 += cy[wyb_cy(eng)%sys];
 
     
-    cout <<op[nr_op]<<" "<<sys<<" \n\n"<<a1<<" \n\n"<<b1<<" \n\n\n";
+    //cout <<op[nr_op]<<" "<<sys<<" \n\n"<<a1<<" \n\n"<<b1<<" \n\n\n";
+    cout <<op[nr_op]<<" "<<sys<<"\n\n"<<a1<<"\n\n"<<b1<<"\n\n\n";
     a1 = "";
     b1 = "";
     }

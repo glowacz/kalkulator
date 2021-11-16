@@ -3,7 +3,7 @@
 using namespace std;
 
 const ll N = 1000000000000000000; //10^\18
-//const ll N = 1000000000; //10^9
+const ll N1 = 1000000000; //10^9
 //const ll N = 2000000000;
 //const ll N = 20000;
 const ll M = 2000;
@@ -63,9 +63,10 @@ int main(){
     l_op = rand()%O+1;
     l_op = O;
     //l_op = 2;
-    uniform_int_distribution<> wyb_op(3, 3);
-    uniform_int_distribution<> wyb_sys(2, 2);
+    uniform_int_distribution<> wyb_op(0, 4);
+    uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<ll> distr(N/M, N);
+    uniform_int_distribution<ll> distr_mult(N1/M, N1);
     uniform_int_distribution<ll> distr_small(1, M);
     uniform_int_distribution<ll> distr_b(0, B);
     uniform_int_distribution<ll> distr_e(0, E);
@@ -80,6 +81,11 @@ int main(){
     //a = 0;
 
     nr_op = wyb_op(eng);
+
+    if(op[nr_op] == '*'){
+        a = distr_mult(eng);
+        b = distr_mult(eng);
+    }
 
     /*while( a % b == 0 ) { //nie zachodzi podzielność
         a = distr_small(eng); b = distr_small(eng);
@@ -109,7 +115,8 @@ int main(){
     a1 = dec_to_sys(a, sys);
     b1 = dec_to_sys(b, sys);
     
-    cout <<op[nr_op]<<" "<<sys<<" \n\n"<<a1<<" \n\n"<<b1<<" \n\n\n";
+    //cout <<op[nr_op]<<" "<<sys<<" \n\n"<<a1<<" \n\n"<<b1<<" \n\n\n";
+    cout <<op[nr_op]<<" "<<sys<<"\n\n"<<a1<<"\n\n"<<b1<<"\n\n\n";
     }
     return 0;
 }

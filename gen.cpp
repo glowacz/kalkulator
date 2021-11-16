@@ -7,12 +7,12 @@ const ll N1 = 1000000000; //10^9
 //const ll N = 2000000000;
 //const ll N = 20000;
 const ll M = 2000;
-const ll B = 100;
-const ll E = 9;
+const ll B = 10;
+const ll E = 18;
 const ll O = 1000;
 //const ll N = 1000;
 
-string op = "+*-/%^";
+string op = "+*-/%^k";
 int sys = 10, nr_op, l_op;
 ll a, b;
 string a1, b1;
@@ -63,7 +63,7 @@ int main(){
     l_op = rand()%O+1;
     l_op = O;
     //l_op = 2;
-    uniform_int_distribution<> wyb_op(3, 3);
+    uniform_int_distribution<> wyb_op(0, 5);
     uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<ll> distr(N/M, N);
     uniform_int_distribution<ll> distr_mult(N1/M, N1);

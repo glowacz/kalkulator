@@ -5,13 +5,13 @@ using namespace std;
 const int N = 3000;
 const int N1 = 30;
 const int N2 = 300;
-const int B = 10;
-const int E = 4;
+const int B = 15;
+const int E = 3;
 const int O = 100;
 
-string op = "+*/%^";
+string op = "+*/%^k";
 int sys = 10, nr_op, l_op, n, m;
-string a1, b1, cy="0123456789ABCDEF";
+string a1, b1, cy = "0123456789ABCDEF";
 
 random_device rd;
 mt19937 eng(chrono::steady_clock::now().time_since_epoch().count());
@@ -22,7 +22,7 @@ int main(){
     l_op = O;
     l_op = 5;
     
-    uniform_int_distribution<> wyb_op(2, 2);
+    uniform_int_distribution<> wyb_op(0, 4);
     uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<> dl(N-B, N);
     uniform_int_distribution<> dl1(N1-B, N1);
@@ -32,7 +32,9 @@ int main(){
     uniform_int_distribution<> wyb_cy(0, 15);
 
     for(int i=0; i<l_op; i++){
-    
+        a1 = "";
+        b1 = "";
+
         sys = wyb_sys(eng);
 
         nr_op = wyb_op(eng);
@@ -53,16 +55,20 @@ int main(){
             m = distr_e(eng);
         }
 
+        if(op[nr_op] == 'k'){
+            a1 += cy[wyb_cy(eng)%(sys-1)+1];
+            for(int i=1; i<n; i++) a1 += cy[wyb_cy(eng)%sys];
+            cout <<sys<<" "<<wyb_sys(eng)<<"\n\n"<<a1<<"\n\n\n";
+            continue;
+        }
+
         a1 += cy[wyb_cy(eng)%(sys-1)+1];
         b1 += cy[wyb_cy(eng)%(sys-1)+1];
         for(int i=1; i<n; i++) a1 += cy[wyb_cy(eng)%sys];
         for(int i=1; i<m; i++) b1 += cy[wyb_cy(eng)%sys];
 
-        
         //cout <<op[nr_op]<<" "<<sys<<" \n\n"<<a1<<" \n\n"<<b1<<" \n\n\n";
         cout <<op[nr_op]<<" "<<sys<<"\n\n"<<a1<<"\n\n"<<b1<<"\n\n\n";
-        a1 = "";
-        b1 = "";
     }
     return 0;
 }

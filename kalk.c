@@ -5,8 +5,8 @@
 #include <malloc.h>
 #define A 9
 #define B 16
+#define BIG_BUFF 100000
 #define L 2
-#define BUF 100000
 
 char *read(FILE* file, size_t base_len)
 {
@@ -30,7 +30,7 @@ char *read(FILE* file, size_t base_len)
     return realloc(str, sizeof(*str)*len);
 }
 
-void str_cpy(char *a, char *b)  //aktualnie nieuzywane (jest ewidentnie wolniejsze)
+void str_cpy(char *a, char *b)  //aktualnie nieuzywane (jest ewidentnie wolniejsze od strspy z biblioteki)
 {
     int i = 0;
     while(b[i] != '\0')
@@ -80,29 +80,34 @@ void num_to_let(char *str)
 int input_analysis(char *a, char *b, int sys, char op)
 {
     int n = strlen(a), m = strlen(b);
-    int is_zero = 1, good_sys = 1;
+    int a_is_zero = 1, b_is_zero = 1, good_sys = 1;
     let_to_num(a);
     let_to_num(b);
     //printf("a=%s\nb=%s\nn=%i\nm=%i\nsys=%i\n", a, b, n, m, sys);
-    for(int i=0; i<n; i++){
-        if(a[i]-'0' >= sys || a[i]-'0' < 0) {
+    for(int i=0; i<n; i++)
+    {
+        if(a[i]-'0' >= sys || a[i]-'0' < 0) 
+        {
             //printf("a, %i\n", i); 
             good_sys = 0;
         }
+        if(a[i] != '0') a_is_zero = 0;
     }
-    for(int i=0; i<m; i++){
-        if(b[i]-'0' >= sys || b[i]-'0' < 0){
+    for(int i=0; i<m; i++)
+    {
+        if(b[i]-'0' >= sys || b[i]-'0' < 0)
+        {
             //printf("b, %i\n", i); 
             good_sys = 0;
         }
-        if(b[i] != '0') is_zero = 0;
+        if(b[i] != '0') b_is_zero = 0;
     }
     num_to_let(a);
     num_to_let(b);
     if( good_sys == 0 ) return 1;
-    if( (op == '/' || op == '%') && is_zero ) return 2;
-    //if(a[0] == '0') return 3;
-    //if(b[0] == '0') return 3;
+    if( (op == '/' || op == '%') && b_is_zero ) return 2;
+    if(a[0] == '0' && !a_is_zero) return 3;
+    if(b[0] == '0' && !b_is_zero) return 3;
     return 0;
 }
 
@@ -112,7 +117,8 @@ int input_analysis_conv(char *a, int sys)
     int n = strlen(a);
     int good_sys = 1;
     let_to_num(a);
-    for(int i=0; i<n; i++){
+    for(int i=0; i<n; i++)
+    {
         if(a[i]-'0' >= sys || a[i]-'0' < 0) good_sys = 0;
     }
     num_to_let(a);
@@ -399,7 +405,8 @@ char *div_(char *a, char *b, char **c1, int sys)
     return c;
 }
 
-char *mod(char *a, char *b, char **c1, int sys){
+char *mod(char *a, char *b, char **c1, int sys)
+{
     int n = strlen(a), m = strlen(b);
     char *tmp1 = malloc(n+A);
     char *tmp = tmp1;
@@ -415,15 +422,16 @@ char *mod(char *a, char *b, char **c1, int sys){
     return c;
 }
 
-/*char *sys_conv(int sys1, int sys2, char **b1){
-    int akt = sys2, i = 0, pom[B];
+char *sys_conv(int sys1, int sys2, char **b1)
+{
+    int curr = sys2, i = 0, pom[B];
     //char *wyn = malloc(B);
     *b1 = malloc(B);
-    char *c = *b1;
+    char *b = *b1;
     //char *wyn = malloc(B);
-    while( akt != 0 ){
-        pom[i] = akt % sys1;
-        akt /= sys1;
+    while( curr != 0 ){
+        pom[i] = curr % sys1;
+        curr /= sys1;
         i++;
     }
     int n = i;
@@ -443,45 +451,84 @@ int dig_conv(char *str, int sys1, int sys2){
     return res;
 }
 
-char *num_conv(char *a, char *b, int sys, int sys2){
+char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
+{
     int i = 0, n = strlen(a);
     int cy[n*4+A];
-    char *akt = malloc(n+A), *c;
-    char *wyn = malloc(n*4+A), *pom = malloc(n*4+A), *tmp = malloc(n+A);
-    str_cpy(akt, a);
+    *c1 = malloc(n*4+A);
+    char *curr1 = malloc(n+A), *inv1 = malloc(n*4+A);
+    char *c = *c1, *curr = curr1, *inv = inv1;
+    //char *wyn = malloc(n*4+A), *tmp = malloc(n+A);
+    str_cpy(curr, a);
 
-    while( akt[0] != '0' ){
-        c = mod(akt, b, sys);
-        pom[i] =  dig_conv(c, sys, sys2)+'0';
-        tmp = div_(akt, b, sys);
-        str_cpy(akt, tmp);
+    while( curr[0] != '0' )
+    {
+        c = mod(curr, b, &c, sys);
+        inv[i] =  dig_conv(c, sys, sys2)+'0';
+        //tmp = div_(curr, b, sys);
+        c = div_(curr, b, &c, sys);
+        str_cpy(curr, c);
         i++;
     }
     int m = i;
-    for(i=0; i<m; i++) {
-        wyn[i] = pom[m-i-1];
+    for(i=0; i<m; i++) 
+    {
+        c[i] = inv[m-i-1];
     }
-    wyn[m] = '\0';
-    num_to_let(wyn);
+    c[m] = '\0';
+    num_to_let(c);
 
-    return wyn;
+    free(curr1);
+    free(inv1);
+
+    return c;
 }
 
-char *qck_pow(char *b, char *e, int sys){
-    char *pom = malloc(strlen(e)+A);
+char *basic_pow(char *b, char *e, char **c1, int sys)
+{
+    int n, m;
+    n = strlen(b);
+    m = strlen(e);
+    
+    *c1 = malloc(BIG_BUFF);
+    char *tmp1 = malloc(BIG_BUFF), *curr_e1 = malloc(m+A);
+    char *c = *c1, *tmp = tmp1, *curr_e = curr_e1;
+    
+    c[0] = '1'; c[1] = '\0';
+    curr_e[0] = '0'; curr_e[1] = '\0';
+    
+    int i = 0;
+    while( str_cmp(e, curr_e) != 0 )
+    {
+        tmp = mult(c, b, &tmp, sys);
+        str_cpy(c, tmp);
+        tmp = add(curr_e, "1", &tmp, sys);
+        str_cpy(curr_e, tmp);
+        i++;
+        //if(i > 20) printf("spore wykladniki\n");
+    }
+
+    free(tmp1);
+    free(curr_e1);
+
+    return c;
+}
+
+/*char *qck_pow(char *b, char *e, int sys){
+    char *help = malloc(strlen(e)+A);
     if(str_cmp(e, "0") == 0) return "1";
     if(str_cmp(e, "1") == 0) {
-        str_cpy(pom, b);
-        return pom;
+        str_cpy(help, b);
+        return help;
     }
     else if(sys == 2){
-        pom = div_(e, "10", sys);
-        if(str_cmp(mult(pom, "10", sys), e) == 0) return mult(qck_pow(b, pom, sys), qck_pow(b, pom, sys), sys);
+        help = div_(e, "10", sys);
+        if(str_cmp(mult(help, "10", sys), e) == 0) return mult(qck_pow(b, help, sys), qck_pow(b, help, sys), sys);
         else return mult(qck_pow(b, subtr(e, "1", sys), sys), b, sys);
     }
     else{
-        pom = div_(e, "2", sys);
-        if(str_cmp(mult(pom, "2", sys), e) == 0) return mult(qck_pow(b, pom, sys), qck_pow(b, pom, sys), sys);
+        help = div_(e, "2", sys);
+        if(str_cmp(mult(help, "2", sys), e) == 0) return mult(qck_pow(b, help, sys), qck_pow(b, help, sys), sys);
         else return mult(qck_pow(b, subtr(e, "1", sys), sys), b, sys);
     }
 }*/
@@ -496,10 +543,10 @@ int main(int argc, char *argv[])
     //FILE *out = stdout;
     
     char *a, *b, *c, *d, *bin, *line, op, ch;
-    int sys, sys1, sys2, n, m, line_len, err;   
-    size_t bufsize = BUF; 
+    int sys, sys1, sys2, n, m, line_len, err;
     
-    while(1){
+    while(1)
+    {
     line = read(in, L);
     bin = read(in, L);
     line_len = strlen(line);
@@ -510,19 +557,21 @@ int main(int argc, char *argv[])
     //printf("dl_linii=%i\n", line_len);
     //printf("linia=%s\n", line);
 
-    if(op >= 48 && op <= 57){
+    if(op >= 48 && op <= 57)
+    {
         //konwersja
-        if(line[1] == ' '){
+        if(line[1] == ' ')
+        {
             sys1 = line[0]-'0';
             if(line_len == 3) sys2 = line[2]-'0';
             else sys2 = 10+line[3]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
         }
-        else{
+        else
+        {
             sys1 = 10+line[1]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
             if(line_len == 4) sys2 = line[3]-'0';
             else sys2 = 10+line[4]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
         }
-
         a = read(in, L);
         bin = read(in, L);
         bin = read(in, L);
@@ -535,13 +584,15 @@ int main(int argc, char *argv[])
         //while(strlen(a) > 1 && a[0] == '0') a++;
         
         err = input_analysis_conv(a, sys1);
-        if( err != 0 ){
+        if( err != 0 )
+        {
             if( err == 1 ) fprintf( out, "NaN\n\n\n" );
             if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n\n" );
             continue;
         }
     }
-    else{
+    else
+    {
         //działanie
         if(line_len == 3) sys = line[2]-'0';
         else sys = 10+line[3]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
@@ -555,9 +606,6 @@ int main(int argc, char *argv[])
         n = strlen(a);
         m = strlen(b);
 
-        /*a[n-1] = '\0';
-        b[m-1] = '\0';*/
-
         a[n] = '\0';
         b[m] = '\0';
 
@@ -570,7 +618,8 @@ int main(int argc, char *argv[])
         //while(strlen(b) > 1 && b[0] == '0') b++;
 
         err = input_analysis(a, b, sys, op);
-        if( err != 0 ) {
+        if( err != 0 ) 
+        {
             if( err == 1 ) fprintf( out, "NaN\n\n\n" );
             if( err == 2 ) fprintf( out, "DIVISION_BY_ZERO\n\n\n" );
             if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n\n" );
@@ -589,7 +638,6 @@ int main(int argc, char *argv[])
     }
     else if(op == '*') 
     {
-        //c = malloc(n+m+A);
         fprintf(out, "%s\n\n\n", mult(a, b, &c, sys));
     }
     else if(op == '/') 
@@ -601,23 +649,24 @@ int main(int argc, char *argv[])
     {
         fprintf(out, "%s\n\n\n", mod(a, b, &c, sys));
     }
-    /*else if(op == '^') {
-        //let_to_num(a);
-        //let_to_num(b);
-        //if( str_cmp(b, "0") == 0 ) return a;
-        c = qck_pow(a, b, sys);
-        //num_to_let(c);
-        fprintf(out, "%s\n\n\n", c);
+    else if(op == '^') 
+    {
+        //c = qck_pow(a, b, sys);
+        //c = qck_pow(a, b, sys);
+        //if( m > 2 ) printf("spore wykladniki\n");
+        fprintf(out, "%s\n\n\n", basic_pow(a, b, &c, sys));
     }
-    else {
+    else 
+    {
         b = sys_conv(sys1, sys2, &b);
-        fprintf(out, "%s\n\n\n", num_conv(a, b, sys1, sys2));
-    }*/
+        //printf("base 2 in sys 1:\n%s\n", b);
+        fprintf(out, "%s\n\n\n", num_conv(a, b, &c, sys1, sys2));
+    }
     
     }
+
     free(a); free(b); free(line); free(bin);
-    //printf("przed free c\n");
     free(c); //czasami (rzadko) przy div_ byl problem z free(c)
-    //printf("po free c\n");
+    
     return 0;
 }

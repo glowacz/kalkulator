@@ -10,8 +10,8 @@ do
     #./wzo < kalk.in > wzo.out
     #./bru < kalk.in > bru.out
     ./wzo in_tes.txt
-    ./bru > bru.out
-    diff -q wzo.out bru.out || break
+    ./bru > out_bru.txt
+    diff -q out.txt out_bru.txt || break
     echo "TEST $i   OK"
     #sleep 1s
 done

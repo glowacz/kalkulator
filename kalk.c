@@ -8,17 +8,19 @@
 #define L 2
 #define BUF 100000
 
-char *read(FILE* file, size_t base_len){
+char *read(FILE* file, size_t base_len)
+{
     char *str;
     int ch;
     size_t len = 0;
     str = realloc(NULL, sizeof(*str)*base_len);
     //if(!str) return str;
     ch=getc(file);
-    while(EOF != ch && ch != '\n'){
-        //printf("read\n");
+    while(EOF != ch && ch != '\n')
+    {
         str[len++] = ch;
-        if(len == base_len){
+        if(len == base_len)
+        {
             str = realloc(str, sizeof(*str)*(base_len+=2));
             if(!str) return str;
         }
@@ -28,22 +30,26 @@ char *read(FILE* file, size_t base_len){
     return realloc(str, sizeof(*str)*len);
 }
 
-void str_cpy(char *a, char *b){ //aktualnie nieuzywane (jest ewidentnie wolniejsze)
+void str_cpy(char *a, char *b)  //aktualnie nieuzywane (jest ewidentnie wolniejsze)
+{
     int i = 0;
-    while(b[i] != '\0'){
+    while(b[i] != '\0')
+    {
         a[i] = b[i];
         i++;
     }
     a[i] = '\0';
 }
 
-int str_len(char *a){
+int str_len(char *a)
+{
     int i = 0, len = 0;
     while(a[i] != '\0') i++;
     return i;
 }
 
-int str_cmp(char *a, char *b){
+int str_cmp(char *a, char *b)
+{
     int i = 0;
     while(a[i] != '\0' && b[i] != '\0'){
         if(a[i] < b[i]) return -1;
@@ -55,23 +61,24 @@ int str_cmp(char *a, char *b){
     return 1;
 }
 
-void let_to_num(char *str){
+void let_to_num(char *str)
+{
     int i;
     for(i=0; i<strlen(str); i++){
         if(str[i]-'0' >= 10) str[i] -= 7;
     }
 }
 
-void num_to_let(char *str){
+void num_to_let(char *str)
+{
     int i;
     for(i=0; i<strlen(str); i++){
         if(str[i]-'0' >= 10) str[i] += 7;
     }
 }
 
-int input_analysis(char *a, char *b, int sys, char op){
-    //printf("hello\n");
-    //printf("hello2\n");
+int input_analysis(char *a, char *b, int sys, char op)
+{
     int n = strlen(a), m = strlen(b);
     int is_zero = 1, good_sys = 1;
     let_to_num(a);
@@ -99,7 +106,8 @@ int input_analysis(char *a, char *b, int sys, char op){
     return 0;
 }
 
-int input_analysis_conv(char *a, int sys){
+int input_analysis_conv(char *a, int sys)
+{
     if(a[0] == '0') return 3;
     int n = strlen(a);
     int good_sys = 1;
@@ -112,21 +120,25 @@ int input_analysis_conv(char *a, int sys){
     return 0;
 }
 
-int pow_(int b, int e){
+int pow_(int b, int e)
+{
     int res = 1;
     for(int i = 0; i < e; i++) res *= b;
     return res;
 }
 
-char *add(char *a, char *b, char **c1, int sys){
+char *add(char *a, char *b, char **c1, int sys)
+{
     int n, m, i, j_a, j_b;
-    if(strlen(a) >= strlen(b)){
+    if(strlen(a) >= strlen(b))
+    {
         n = strlen(a);
         m = strlen(b);
         j_b = m-1;
         j_a = INT_MAX;
     }
-    else{
+    else
+    {
         n = strlen(b);
         m = strlen(a);
         j_a = m-1;
@@ -139,22 +151,21 @@ char *add(char *a, char *b, char **c1, int sys){
     *c1 = malloc(n+A);
     char *c = *c1;
     int cy[n+A];
-    //char *c = malloc(n+A);
 
     for(i=n; i>=0; i--) cy[i] = 0;
-    //printf("hello\n");
-    for(i=n-1; i>=0; i--) {
+    for(i=n-1; i>=0; i--) 
+    {
         if(j_a < 0) cy[i+1] += b[i]-'0';
         else if(j_b < 0) cy[i+1] += a[i]-'0';
         else if(strlen(a) >= strlen(b)) cy[i+1] += a[i]+b[j_b]-2*'0';
         else cy[i+1] += a[j_a]+b[i]-2*'0';
 
-        if(cy[i+1] >= sys){
+        if(cy[i+1] >= sys)
+        {
             c[i+1] = cy[i+1]-sys+'0';
             cy[i] = 1;
         }
         else c[i+1] = cy[i+1]+'0';
-        //printf("hello\n");
         j_a--;
         j_b--;
     }
@@ -167,10 +178,6 @@ char *add(char *a, char *b, char **c1, int sys){
     while(c[0] == '0') c++;
     if(strlen(c) == 0) c--;
 
-    //fprintf(out, "%s\n\n\n", c);
-    
-    //free(c);
-    //printf("hello\n");
     return c;
 }
 
@@ -235,8 +242,6 @@ char *subtr(char *a, char *b, char **c1, int sys){
     let_to_num(b);
 
     str_cpy(a1, a);
-    //strcpy(a1, a);
-    //a1 = a;
 
     for(i=n; i >= 0; i--) cy[i] = 0;
 
@@ -398,7 +403,6 @@ char *mod(char *a, char *b, char **c1, int sys){
     int n = strlen(a), m = strlen(b);
     char *tmp1 = malloc(n+A);
     char *tmp = tmp1;
-    //char tmp[n+A];
     *c1 = malloc(n+A);
     char *c = *c1;
     tmp = div_(a, b, &tmp, sys);
@@ -485,23 +489,21 @@ char *qck_pow(char *b, char *e, int sys){
 int main(int argc, char *argv[])
 //int main()
 {
-    //printf("hello\n");
-    //FILE *in = fopen("in_tes.txt", "r");
-    FILE *in = fopen(argv[1], "r");
-    //FILE *out = fopen("wzo.out", "w");
+    FILE *in;
+    if(argc == 2) in = fopen(argv[1], "r");
+    else in = fopen("in.txt", "r");
     FILE *out = fopen("out.txt", "w");
+    //FILE *out = stdout;
+    
     char *a, *b, *c, *d, *bin, *line, op, ch;
     int sys, sys1, sys2, n, m, line_len, err;   
-    size_t bufsize = BUF;
-    //FILE *out = stdout;
+    size_t bufsize = BUF; 
+    
     while(1){
-    //printf("przed read\n");
     line = read(in, L);
-    //printf("po read\n");
     bin = read(in, L);
     line_len = strlen(line);
     if(line_len == 0) break;
-    //line[line_len-1] = '\0';
     line[line_len] = '\0';
     line_len = strlen(line);
     op = line[0];
@@ -520,11 +522,6 @@ int main(int argc, char *argv[])
             if(line_len == 4) sys2 = line[3]-'0';
             else sys2 = 10+line[4]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
         }
-        //a = read(in, 4); 
-        /*getline(&a, &bufsize, in);
-        getline(&bin, &bufsize, in);
-        getline(&bin, &bufsize, in);
-        a[strlen(a)-2] = '\0';*/
 
         a = read(in, L);
         bin = read(in, L);
@@ -548,8 +545,6 @@ int main(int argc, char *argv[])
         //działanie
         if(line_len == 3) sys = line[2]-'0';
         else sys = 10+line[3]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
-
-        //printf("sys=%i\n", sys);
 
         a = read(in, L);
         bin = read(in, L);
@@ -584,9 +579,6 @@ int main(int argc, char *argv[])
         }
     }
     
-    //printf("a=%s\nb=%s\n", a, b);
-    
-    //if(op == '+') add(a, b, sys, out);
     if(op == '+') 
     {
         fprintf(out, "%s\n\n\n", add(a, b, &c, sys));
@@ -622,15 +614,10 @@ int main(int argc, char *argv[])
         fprintf(out, "%s\n\n\n", num_conv(a, b, sys1, sys2));
     }*/
     
-    //printf("main przed free\n");
-    free(a);
-    free(b);
-    //printf("main przed free c\n");
-    free(c); //czasami (rzadko) przy div_ byl problem z free(c)
-    //printf("main po free c\n");
-    free(line);
-    free(bin);
-    //printf("main po free\n");
     }
+    free(a); free(b); free(line); free(bin);
+    //printf("przed free c\n");
+    free(c); //czasami (rzadko) przy div_ byl problem z free(c)
+    //printf("po free c\n");
     return 0;
 }

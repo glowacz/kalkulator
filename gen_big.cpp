@@ -20,7 +20,7 @@ int main(){
     srand(time(0));
     l_op = rand()%O+1;
     l_op = O;
-    //l_op = 5;
+    l_op = 5;
     
     uniform_int_distribution<> wyb_op(0, 3);
     uniform_int_distribution<> wyb_sys(2, 16);
@@ -32,39 +32,37 @@ int main(){
     uniform_int_distribution<> wyb_cy(0, 15);
 
     for(int i=0; i<l_op; i++){
-    //uniform_int_distribution<long long> distr_small(1, N/100000);
-    //uniform_int_distribution<long long> distr_small(1, M);
-
-    sys = wyb_sys(eng);
-
-    nr_op = wyb_op(eng);
-
-    n = dl(eng);
-    m = dl(eng);
-
-    //n = dl1(eng); m = dl1(eng); //dl 20-30
-    //n = dl2(eng); m = dl2(eng); //dl 280-300
-
-    //n = N-N2, m = N; //zawsze duze
-
-    //n = distr_e(eng); m = distr_e(eng); //malutkie liczby
-    //n = distr_b(eng); m = distr_b(eng); //male liczby
-
-    if(op[nr_op] == '^'){
-        n = distr_b(eng);
-        m = distr_e(eng);
-    }
-
-    a1 += cy[wyb_cy(eng)%(sys-1)+1];
-    b1 += cy[wyb_cy(eng)%(sys-1)+1];
-    for(int i=1; i<n; i++) a1 += cy[wyb_cy(eng)%sys];
-    for(int i=1; i<m; i++) b1 += cy[wyb_cy(eng)%sys];
-
     
-    //cout <<op[nr_op]<<" "<<sys<<" \n\n"<<a1<<" \n\n"<<b1<<" \n\n\n";
-    cout <<op[nr_op]<<" "<<sys<<"\n\n"<<a1<<"\n\n"<<b1<<"\n\n\n";
-    a1 = "";
-    b1 = "";
+        sys = wyb_sys(eng);
+
+        nr_op = wyb_op(eng);
+
+        n = dl(eng);
+        m = dl(eng);
+
+        //n = dl1(eng); m = dl1(eng); //dl 20-30
+        //n = dl2(eng); m = dl2(eng); //dl 280-300
+
+        //n = N-N2, m = N; //zawsze duze
+
+        //n = distr_e(eng); m = distr_e(eng); //malutkie liczby
+        //n = distr_b(eng); m = distr_b(eng); //male liczby
+
+        if(op[nr_op] == '^'){
+            n = distr_b(eng);
+            m = distr_e(eng);
+        }
+
+        a1 += cy[wyb_cy(eng)%(sys-1)+1];
+        b1 += cy[wyb_cy(eng)%(sys-1)+1];
+        for(int i=1; i<n; i++) a1 += cy[wyb_cy(eng)%sys];
+        for(int i=1; i<m; i++) b1 += cy[wyb_cy(eng)%sys];
+
+        
+        //cout <<op[nr_op]<<" "<<sys<<" \n\n"<<a1<<" \n\n"<<b1<<" \n\n\n";
+        cout <<op[nr_op]<<" "<<sys<<"\n\n"<<a1<<"\n\n"<<b1<<"\n\n\n";
+        a1 = "";
+        b1 = "";
     }
     return 0;
 }

@@ -63,8 +63,8 @@ int str_cmp(char *a, char *b)
 
 void let_to_num(char *str)
 {
-    int i;
-    for(i=0; i<strlen(str); i++){
+    for(int i=0; i<strlen(str); i++)
+    {
         if(str[i]-'0' >= 10) str[i] -= 7;
     }
 }
@@ -72,7 +72,8 @@ void let_to_num(char *str)
 void num_to_let(char *str)
 {
     int i;
-    for(i=0; i<strlen(str); i++){
+    for(i=0; i<strlen(str); i++)
+    {
         if(str[i]-'0' >= 10) str[i] += 7;
     }
 }
@@ -83,23 +84,14 @@ int input_analysis(char *a, char *b, int sys, char op)
     int a_is_zero = 1, b_is_zero = 1, good_sys = 1;
     let_to_num(a);
     let_to_num(b);
-    //printf("a=%s\nb=%s\nn=%i\nm=%i\nsys=%i\n", a, b, n, m, sys);
     for(int i=0; i<n; i++)
     {
-        if(a[i]-'0' >= sys || a[i]-'0' < 0) 
-        {
-            //printf("a, %i\n", i); 
-            good_sys = 0;
-        }
+        if(a[i]-'0' >= sys || a[i]-'0' < 0) good_sys = 0;
         if(a[i] != '0') a_is_zero = 0;
     }
     for(int i=0; i<m; i++)
     {
-        if(b[i]-'0' >= sys || b[i]-'0' < 0)
-        {
-            //printf("b, %i\n", i); 
-            good_sys = 0;
-        }
+        if(b[i]-'0' >= sys || b[i]-'0' < 0) good_sys = 0;
         if(b[i] != '0') b_is_zero = 0;
     }
     num_to_let(a);
@@ -156,26 +148,26 @@ char *add(char *a, char *b, char **c1, int sys)
 
     *c1 = malloc(n+A);
     char *c = *c1;
-    int cy[n+A];
+    int dig[n+A];
 
-    for(i=n; i>=0; i--) cy[i] = 0;
+    for(i=n; i>=0; i--) dig[i] = 0;
     for(i=n-1; i>=0; i--) 
     {
-        if(j_a < 0) cy[i+1] += b[i]-'0';
-        else if(j_b < 0) cy[i+1] += a[i]-'0';
-        else if(strlen(a) >= strlen(b)) cy[i+1] += a[i]+b[j_b]-2*'0';
-        else cy[i+1] += a[j_a]+b[i]-2*'0';
+        if(j_a < 0) dig[i+1] += b[i]-'0';
+        else if(j_b < 0) dig[i+1] += a[i]-'0';
+        else if(strlen(a) >= strlen(b)) dig[i+1] += a[i]+b[j_b]-2*'0';
+        else dig[i+1] += a[j_a]+b[i]-2*'0';
 
-        if(cy[i+1] >= sys)
+        if(dig[i+1] >= sys)
         {
-            c[i+1] = cy[i+1]-sys+'0';
-            cy[i] = 1;
+            c[i+1] = dig[i+1]-sys+'0';
+            dig[i] = 1;
         }
-        else c[i+1] = cy[i+1]+'0';
+        else c[i+1] = dig[i+1]+'0';
         j_a--;
         j_b--;
     }
-    c[0] = cy[0]+'0';
+    c[0] = dig[0]+'0';
     c[n+1] = '\0';
     num_to_let(a);
     num_to_let(b);
@@ -187,7 +179,8 @@ char *add(char *a, char *b, char **c1, int sys)
     return c;
 }
 
-char *mult(char *a, char *b, char **c1, int sys){
+char *mult(char *a, char *b, char **c1, int sys)
+{
     int n, m, i, j, i_c;
     n = strlen(a);
     m = strlen(b);
@@ -195,35 +188,35 @@ char *mult(char *a, char *b, char **c1, int sys){
     let_to_num(a);
     let_to_num(b);
 
-    int cy_a[n+A], cy_b[m+A], cy[n+m+A], cy_main[n+m+A];
+    int dig_a[n+A], dig_b[m+A], dig[n+m+A], dig_main[n+m+A];
     *c1 = malloc(n+m+A);
     char *c = *c1;
 
-    for(i=0; i<n; i++) cy_a[i] = a[i]-'0';
-    for(i=0; i<m; i++) cy_b[i] = b[i]-'0';
+    for(i=0; i<n; i++) dig_a[i] = a[i]-'0';
+    for(i=0; i<m; i++) dig_b[i] = b[i]-'0';
 
-    for(i=n+m-1; i >= 0; i--) cy_main[i] = 0;
+    for(i=n+m-1; i >= 0; i--) dig_main[i] = 0;
 
     for(j=m-1; j>=0; j--) {
         i_c = n+j;
-        for(i=i_c; i >= i_c-n; i--) cy[i] = 0;
+        for(i=i_c; i >= i_c-n; i--) dig[i] = 0;
         for(i=n-1; i >= 0; i--){
-            cy[i_c] += cy_b[j]*cy_a[i];
-            if(cy[i_c] >= sys) {
-                cy[i_c-1] = cy[i_c]/sys;
-                cy[i_c] %= sys;
+            dig[i_c] += dig_b[j]*dig_a[i];
+            if(dig[i_c] >= sys) {
+                dig[i_c-1] = dig[i_c]/sys;
+                dig[i_c] %= sys;
             }
             i_c--;
         }
         for(i = n+j; i>=i_c; i--){
-            cy_main[i] += cy[i];
-            if(cy_main[i] >= sys){
-                cy_main[i-1] += cy_main[i]/sys;
-                cy_main[i] %= sys;
+            dig_main[i] += dig[i];
+            if(dig_main[i] >= sys){
+                dig_main[i-1] += dig_main[i]/sys;
+                dig_main[i] %= sys;
             }
         }
     }
-    for(i=0; i<n+m; i++) c[i] = cy_main[i]+'0';
+    for(i=0; i<n+m; i++) c[i] = dig_main[i]+'0';
     c[n+m] = '\0';
     num_to_let(a);
     num_to_let(b);
@@ -235,12 +228,13 @@ char *mult(char *a, char *b, char **c1, int sys){
     return c;
 }
 
-char *subtr(char *a, char *b, char **c1, int sys){
+char *subtr(char *a, char *b, char **c1, int sys)
+{
     int n, m, i, j_b;
     n = strlen(a);
     m = strlen(b);
     j_b = m-1;
-    int cy[n+A];
+    int dig[n+A];
     *c1 = malloc(n+A);
     char *c = *c1, *a1 = malloc(n+A);
 
@@ -249,17 +243,17 @@ char *subtr(char *a, char *b, char **c1, int sys){
 
     str_cpy(a1, a);
 
-    for(i=n; i >= 0; i--) cy[i] = 0;
+    for(i=n; i >= 0; i--) dig[i] = 0;
 
     for(i=n-1; i>=0; i--) {
-        if(j_b < 0) cy[i] = a1[i]-'0';
-        else cy[i] = a1[i]-b[j_b];
+        if(j_b < 0) dig[i] = a1[i]-'0';
+        else dig[i] = a1[i]-b[j_b];
 
-        if(cy[i] < 0){
+        if(dig[i] < 0){
             a1[i-1] -= 1;
-            cy[i] += sys;
+            dig[i] += sys;
         }
-        c[i] = cy[i]+'0';
+        c[i] = dig[i]+'0';
         j_b--;
     }
     c[n] = '\0';
@@ -276,7 +270,8 @@ char *subtr(char *a, char *b, char **c1, int sys){
     return c;
 }
 
-char *div_pom(char *a, char *b, char **c1, int sys, int *cy){
+char *div_help(char *a, char *b, char **c1, int sys, int *dig)
+{
     //char *a = *a1;
     //char *c1 = malloc(strlen(a)+A);
     char *tmp1 = malloc(strlen(a)+A);
@@ -307,18 +302,18 @@ char *div_pom(char *a, char *b, char **c1, int sys, int *cy){
         str_cpy(c, tmp);
     }
     
-    *cy = i;
+    *dig = i;
     
     //*a1 = c;
     //free(c1);
 
-    //printf("div pom przed free\n");
+    //printf("div help przed free\n");
     //printf("wynik: %s\n", c);
     //printf("wynik(cyfra nad kreska): %i\n", i);
 
     free(tmp1);
 
-    //printf("div pom po free\n");
+    //printf("div help po free\n");
 
     /*if(i == 0){
         c[0] = '0';
@@ -334,12 +329,12 @@ char *div_(char *a, char *b, char **c1, int sys)
     n = strlen(a);
     m = strlen(b);
 
-    int cy_a[n+A], cy_b[m+A], cy_curr[n+A], cy = 0;
+    int dig_a[n+A], dig_b[m+A], dig_curr[n+A], dig = 0;
     //*c1 = (char *) realloc(*c1, n+A);
     *c1 = malloc(n+A);
-    char *curr1 = malloc(m+A), *prev1 = malloc(m+A), *temp1 = malloc(m+A), ch;
-    //char curr1[m+A], prev1[m+A], temp1[m+A], ch; //bylo dynamicznie, ale czasem pojawial sie problem z free
-    char *c = *c1, *curr = curr1, *prev = prev1, *temp = temp1;
+    char *curr1 = malloc(m+A), *prev1 = malloc(m+A), *tmp1 = malloc(m+A), ch;
+    //char curr1[m+A], prev1[m+A], tmp1[m+A], ch; //bylo dynamicznie, ale czasem pojawial sie problem z free
+    char *c = *c1, *curr = curr1, *prev = prev1, *tmp = tmp1;
 
     for(i=0; i<n; i++) c[i] = '0';
 
@@ -364,18 +359,18 @@ char *div_(char *a, char *b, char **c1, int sys)
         //printf("curr=%s\n", curr);
         str_cpy(prev, curr);
         prev[strlen(prev)] = '\0';
-        //curr = div_pom(&curr, b, sys, &cy);
-        temp = div_pom(curr, b, &temp, sys, &cy);
-        str_cpy(curr, temp);
+        //curr = div_help(&curr, b, sys, &dig);
+        tmp = div_help(curr, b, &tmp, sys, &dig);
+        str_cpy(curr, tmp);
         //curr[strlen(curr)] = '\0';
-        curr[strlen(temp)] = '\0';
+        curr[strlen(tmp)] = '\0';
         //printf("po pomnozeniu: %s\n", curr);
-        c[i] = cy+'0';
+        c[i] = dig+'0';
         //printf("cyfra do wyniku: %i\n", cy);
         //curr = subtr(prev, curr, sys);
-        temp = subtr(prev, curr, &temp, sys);
-        str_cpy(curr, temp);
-        curr[strlen(temp)] = '\0';
+        tmp = subtr(prev, curr, &tmp, sys);
+        str_cpy(curr, tmp);
+        curr[strlen(tmp)] = '\0';
         //printf("po odjeciu: %s\n", curr);
         //printf("strlen po odjeciu: %li\n", strlen(curr));
         a[i+1] = ch;
@@ -398,7 +393,7 @@ char *div_(char *a, char *b, char **c1, int sys)
 
     free(curr1);
     free(prev1);
-    free(temp1);
+    free(tmp1);
 
     //printf("div_ po free\n");
     

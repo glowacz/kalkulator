@@ -61,8 +61,8 @@ string dec_to_sys(ll a, ll sys){
 int main(){
     srand(time(0));
     l_op = rand()%O+1;
-    l_op = O;
-    //l_op = 2;
+    //l_op = O;
+    l_op = 10;
     uniform_int_distribution<> wyb_op(0, 5);
     uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<ll> distr(N/M, N);

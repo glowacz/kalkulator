@@ -61,11 +61,11 @@ string dec_to_sys(ll a, ll sys){
 int main(){
     srand(time(0));
     l_op = rand()%O+1;
-    //l_op = O;
-    l_op = 10;
-    uniform_int_distribution<> wyb_op(0, 5);
+    l_op = O;
+    //l_op = 10;
+    uniform_int_distribution<> wyb_op(3, 3);
     uniform_int_distribution<> wyb_sys(2, 16);
-    uniform_int_distribution<ll> distr(N/M, N);
+    uniform_int_distribution<ll> distr(M, N);
     uniform_int_distribution<ll> distr_mult(N1/M, N1);
     uniform_int_distribution<ll> distr_small(1, M);
     uniform_int_distribution<ll> distr_b(0, B);
@@ -86,6 +86,8 @@ int main(){
         a = distr_mult(eng);
         b = distr_mult(eng);
     }
+
+    if(op[nr_op] == '/') b = distr_mult(eng); //duzy wynik dzielenia, latwo wywala
 
     /*while( a % b == 0 ) { //nie zachodzi podzielność
         a = distr_small(eng); b = distr_small(eng);

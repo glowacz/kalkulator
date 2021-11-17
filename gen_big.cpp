@@ -10,7 +10,7 @@ const int B = 15;
 const int E = 3;
 const int O = 100;
 
-string op = "+*/%^k";
+string op = "+*/%^k-";
 int sys = 10, nr_op, l_op, n, m;
 string a1, b1, cy = "0123456789ABCDEF";
 
@@ -21,7 +21,7 @@ int main(){
     srand(time(0));
     l_op = rand()%O+1;
     l_op = O;
-    l_op = 10;
+    l_op = 100;
 
     /*
     0 dod
@@ -32,7 +32,7 @@ int main(){
     5 konw
     */
     
-    uniform_int_distribution<> wyb_op(0, 1);
+    uniform_int_distribution<> wyb_op(0, 6);
     uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<> dl(N-B, N);
     uniform_int_distribution<> dl1(N1-B, N1);
@@ -80,6 +80,8 @@ int main(){
         b1 += cy[wyb_cy(eng)%(sys-1)+1];
         for(int i=1; i<n; i++) a1 += cy[wyb_cy(eng)%sys];
         for(int i=1; i<m; i++) b1 += cy[wyb_cy(eng)%sys];
+
+        if(op[nr_op] == '-' && ( a1.size() < b1.size() || (a1.size() == b1.size() &&a1 < b1))) swap(a1, b1);
 
         //cout <<op[nr_op]<<" "<<sys<<" \n\n"<<a1<<" \n\n"<<b1<<" \n\n\n";
         cout <<op[nr_op]<<" "<<sys<<"\n\n"<<a1<<"\n\n"<<b1<<"\n\n\n";

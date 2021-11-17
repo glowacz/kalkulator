@@ -32,7 +32,7 @@ int main(){
     5 konw
     */
     
-    uniform_int_distribution<> wyb_op(5, 5);
+    uniform_int_distribution<> wyb_op(0, 1);
     uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<> dl(N-B, N);
     uniform_int_distribution<> dl1(N1-B, N1);

@@ -71,8 +71,7 @@ void let_to_num(char *str)
 
 void num_to_let(char *str)
 {
-    int i;
-    for(i=0; i<strlen(str); i++)
+    for(int i=0; i<strlen(str); i++)
     {
         if(str[i]-'0' >= 10) str[i] += 7;
     }
@@ -82,39 +81,52 @@ int input_analysis(char *a, char *b, int sys, char op)
 {
     int n = strlen(a), m = strlen(b);
     int a_is_zero = 1, b_is_zero = 1, good_sys = 1;
+    
     let_to_num(a);
     let_to_num(b);
+    
     for(int i=0; i<n; i++)
     {
         if(a[i]-'0' >= sys || a[i]-'0' < 0) good_sys = 0;
         if(a[i] != '0') a_is_zero = 0;
     }
+    
     for(int i=0; i<m; i++)
     {
         if(b[i]-'0' >= sys || b[i]-'0' < 0) good_sys = 0;
         if(b[i] != '0') b_is_zero = 0;
     }
+    
     num_to_let(a);
     num_to_let(b);
+
     if( good_sys == 0 ) return 1;
     if( (op == '/' || op == '%') && b_is_zero ) return 2;
     if(a[0] == '0' && !a_is_zero) return 3;
     if(b[0] == '0' && !b_is_zero) return 3;
+    if( (op == '-') && (n < m || (n == m && str_cmp(a, b) < 0) ) ) return 4;
+    
     return 0;
 }
 
 int input_analysis_conv(char *a, int sys)
-{
-    if(a[0] == '0') return 3;
+{   
     int n = strlen(a);
     int good_sys = 1;
+    
+    if(a[0] == '0' && n > 1) return 3;
+
     let_to_num(a);
+    
     for(int i=0; i<n; i++)
     {
         if(a[i]-'0' >= sys || a[i]-'0' < 0) good_sys = 0;
     }
+    
     num_to_let(a);
+    
     if(good_sys == 0) return 1;
+    
     return 0;
 }
 
@@ -477,6 +489,7 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
     free(curr1);
     free(inv1);
 
+    if( str_cmp(a, "0") == 0 ) return "0";
     return c;
 }
 
@@ -518,11 +531,12 @@ int main(int argc, char *argv[])
     in = fopen("in.txt", "r");
     if(argc == 1) out = fopen("out.txt", "w");
     
-    char *a, *b, *c, *bin, *line, op, file_name[B], file_index[B];
+    char *a = malloc(1), *b = malloc(1), *c = malloc(1), *bin = malloc(1), *line = malloc(1), 
+    op, file_name[B], file_index[B];
     int sys, sys1, sys2, n, m, line_len, err, i = 1;
     
     while(1)
-    {
+    {   
         line = read(in, L);
         
         bin = read(in, L);
@@ -610,6 +624,8 @@ int main(int argc, char *argv[])
                 if( err == 1 ) fprintf( out, "NaN\n\n" );
                 if( err == 2 ) fprintf( out, "DIVISION_BY_ZERO\n\n" );
                 if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n" );
+                if( err == 4 ) fprintf( out, "SUBTRACTING_BIGGER_NUMBER_FROM_SMALLER\n\n" );
+                i++;
                 continue;
             }
         }

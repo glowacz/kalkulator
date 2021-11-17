@@ -1,0 +1,94 @@
+1. Uruchomienie programu
+
+Program jest zwykłą aplikacją konsolową - plikiem wykonywalnym o nazwie "kalk.exe", zatem można uruchomić go poprzez kliknięcie na plik wykonywalny. 
+Inną możliwością jest odpalenie go z poziomu konsoli (poprzez wpisanie "kalk.exe").
+Oczywiście zintegrowane środowiska programistyczne także umożliwiają odpalenie programu.
+
+W folderze z programem powinien się znajdować plik "in.txt", zawierający dane wejściowe.
+
+Istnieje opcja podania mu argumentu, jeśli będzie to "1" to wypisze każdą operację do osobnego pliku ("out1.txt", "out2.txt" itd.).
+W przeciwnym przypadku wypisze wszystkie odpowiedzi do pliku "out.txt".
+
+
+2. Obsługa błędnych danych
+
+Program sprawdza, czy ciągi znaków na wejściu są poprawnymi liczbami w danym systemie.
+Jeśli nie są, wypisuje komunikat "NaN" w miejscu wyniku.
+
+Sprawdza także, czy nie zachodzi próba dzielenia przez zero i wypisuje komunikat "DIVISION_BY_ZERO".
+
+Za błędne dane uznaje liczby zawierające zera wiodące (ale "0" jest poprawną liczbą w każdym systemie) i wypisuje komunikat "TRAILING_ZEROES".
+
+Zawiera też obsługę odejmowania i w tym celu sprawdza, czy nie próbujemy odjąć większej liczby od mniejszej, wtedy wypisuje komunikat "SUBTRACTING_BIGGER_NUMBER_FROM_SMALLER".
+
+W każdym z powyższych przypadków program nie kończy swojego działania, tylko wypisuje komunikat i przechodzi do kolejnej operacji z pliku wejściowego.
+
+
+3a. Dane wejściowe
+
+Program czyta dane z pliku o nazwie "in.txt".
+
+Powinien on zawierać dane w formacie:
+
+<operacja arytmetyczna> <system>
+
+<liczba1>
+
+<liczba2>
+
+
+<dalsze dane>
+
+lub
+
+<system wejściowy> <system wyjściowy>
+
+<liczba>
+
+
+<dalsze dane>
+
+<operacja arytmetyczna> należy do zbioru {+, *, /, %, ^, -} (obsługuje również odejmowanie)
+<system wejściowy> lub <system wyjściowy> to liczba z przedziału 2-19
+
+Pewnym niuansem jest kodowanie znaku końca linii. Choć program z reguły działa poprawnie na pliku wejściowym z kodowaniem LF (linuxowym), to preferowane jest kodowanie CRLF (windowsowe).
+
+
+3b. Dane wyjściowe
+
+Program domyślnie wypisuje dane do pliku "out.txt", jednak gdy dostanie przy wykonywaniu argument "1" to wypisze każdą operację do osobnego pliku ("out1.txt", "out2.txt" itd.).
+
+Dane są wypisane w formacie
+
+<operacja arytmetyczna> <system>
+
+<liczba1>
+
+<liczba2>
+
+<wynik>
+
+<dalsze odpowiedzi>
+
+lub
+
+<system wejściowy> <system wyjściowy>
+
+<liczba>
+
+<wynik>
+
+<dalsze odpowiedzi>
+
+
+4. Struktura programu
+
+Program deklaruje początkowe zmienne, w szczególności tworzy zmienne typu FILE* i otwiera odpowiednie pliki.
+
+Następnie, aż do napotkania pustej linii wykonuje następujące operacje:
+-wczytanie linijki z operacją arytmetyczną i systemem liczbowym lub dwoma systemami liczbowymi
+-rozpoznanie, czy ma wykonać operację arytmetyczną czy konwersję liczby z jednego systemu na drugi
+-wczytanie liczb(y)
+-wykonanie odpowiedniej operacji
+
+Na końcu czyści pamięć.

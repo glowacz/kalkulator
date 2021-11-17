@@ -50,7 +50,8 @@ int str_len(char *a) //currently not utilized, it is significantly slower than s
 int str_cmp(char *a, char *b)
 {
     int i = 0;
-    while(a[i] != '\0' && b[i] != '\0'){
+    while(a[i] != '\0' && b[i] != '\0')
+    {
         if(a[i] < b[i]) return -1;
         if(a[i] > b[i]) return 1;
         i++;
@@ -203,20 +204,25 @@ char *mult(char *a, char *b, char **c1, int sys)
 
     for(i=n+m-1; i >= 0; i--) dig_main[i] = 0;
 
-    for(j=m-1; j>=0; j--) {
+    for(j=m-1; j>=0; j--)
+    {
         i_c = n+j;
         for(i=i_c; i >= i_c-n; i--) dig[i] = 0;
-        for(i=n-1; i >= 0; i--){
+        for(i=n-1; i >= 0; i--)
+        {
             dig[i_c] += dig_b[j]*dig_a[i];
-            if(dig[i_c] >= sys) {
+            if(dig[i_c] >= sys)
+            {
                 dig[i_c-1] = dig[i_c]/sys;
                 dig[i_c] %= sys;
             }
             i_c--;
         }
-        for(i = n+j; i>=i_c; i--){
+        for(i = n+j; i>=i_c; i--)
+        {
             dig_main[i] += dig[i];
-            if(dig_main[i] >= sys){
+            if(dig_main[i] >= sys)
+            {
                 dig_main[i-1] += dig_main[i]/sys;
                 dig_main[i] %= sys;
             }
@@ -250,7 +256,6 @@ char *subtr(char *a, char *b, char **c1, int sys)
     
     *c1 = malloc(n+A);
     char *c = *c1, *a1 = malloc(n+A);
-    //char *c = *c1, a1[n+A];
 
     let_to_num(a);
     let_to_num(b);
@@ -292,7 +297,6 @@ char *div_help(char *a, char *b, char **c1, int sys, int *dig)
     int i = 1;
 
     char *tmp1 = malloc(strlen(a)+A);
-    ///char tmp1[strlen(a)+A];
     char *c = *c1, *tmp = tmp1;
     
     str_cpy(c, b);
@@ -330,7 +334,6 @@ char *div_(char *a, char *b, char **c1, int sys)
     
     *c1 = malloc(n+A);
     char *curr1 = malloc(m+A), *prev1 = malloc(m+A), *tmp1 = malloc(m+A), ch;
-    //char curr1[m+A], prev1[m+A], tmp1[m+A], ch;
     char *c = *c1, *curr = curr1, *prev = prev1, *tmp = tmp1;
 
     for(i=0; i<n; i++) c[i] = '0';
@@ -409,7 +412,8 @@ char *sys_conv(int sys1, int sys2, char **b1)
     *b1 = malloc(B);
     char *b = *b1;
 
-    while( curr != 0 ){
+    while( curr != 0 )
+    {
         pom[i] = curr % sys1;
         curr /= sys1;
         i++;
@@ -417,7 +421,8 @@ char *sys_conv(int sys1, int sys2, char **b1)
     
     int n = i;
     
-    for(i=0; i<n; i++) {
+    for(i=0; i<n; i++)
+    {
         b[i] = pom[n-i-1]+'0';
     }
     b[n] = '\0';
@@ -427,7 +432,8 @@ char *sys_conv(int sys1, int sys2, char **b1)
     return b;
 }
 
-int dig_conv(char *str, int sys1, int sys2){
+int dig_conv(char *str, int sys1, int sys2)
+{
     int res = 0, n = strlen(str);
     
     let_to_num(str);

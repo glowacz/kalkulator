@@ -51,7 +51,7 @@ string dec_to_sys(ll a, ll sys){
 
 int main(){
     ifstream in;
-    in.open("in_tes.txt");
+    in.open("in.txt");
     while(1){
     in >>op;
     in >>sys;
@@ -86,7 +86,7 @@ int main(){
     getline(in, bin);
 
     if( (op == '/' || op == '%') && b == 0 ) {
-        cout <<op <<" " <<sys<<"\n\n"<<a1<<"\n\n"<<b1<<"\n\nDIVISION_BY_ZERO\n\n\n";
+        cout <<op <<" " <<sys<<"\n\n"<<a1<<"\n\n"<<b1<<"\n\nDIVISION_BY_ZERO\n\n";
         continue;
     }
     
@@ -110,7 +110,7 @@ int main(){
         //cout <<"res="<<res<<"\n"<<dec_to_sys(res, sys);
     }
 
-    cout <<"\n\n\n";
+    cout <<"\n\n";
     }
 
     return 0;

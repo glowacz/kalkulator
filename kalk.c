@@ -6,31 +6,30 @@
 #define A 9
 #define B 16
 #define BIG_BUFF 100000
-#define L 2
+#define L 4
 
 char *read(FILE* file, size_t base_len)
 {
     char *str;
     int ch;
     size_t len = 0;
-    str = realloc(NULL, sizeof(*str)*base_len);
-    //if(!str) return str;
+    str = realloc(NULL, base_len);
     ch=getc(file);
     while(EOF != ch && ch != '\n')
     {
         str[len++] = ch;
         if(len == base_len)
         {
-            str = realloc(str, sizeof(*str)*(base_len+=2));
+            str = realloc(str, base_len+=L);
             if(!str) return str;
         }
         ch=getc(file);
     }
     str[len++] = '\0';
-    return realloc(str, sizeof(*str)*len);
+    return realloc(str, len);
 }
 
-void str_cpy(char *a, char *b)  //aktualnie nieuzywane (jest ewidentnie wolniejsze od strspy z biblioteki)
+void str_cpy(char *a, char *b)
 {
     int i = 0;
     while(b[i] != '\0')
@@ -41,7 +40,7 @@ void str_cpy(char *a, char *b)  //aktualnie nieuzywane (jest ewidentnie wolniejs
     a[i] = '\0';
 }
 
-int str_len(char *a)
+int str_len(char *a) //currently not utilized, it is significantly slower than strlen from <string.h>
 {
     int i = 0, len = 0;
     while(a[i] != '\0') i++;
@@ -251,6 +250,7 @@ char *subtr(char *a, char *b, char **c1, int sys)
     
     *c1 = malloc(n+A);
     char *c = *c1, *a1 = malloc(n+A);
+    //char *c = *c1, a1[n+A];
 
     let_to_num(a);
     let_to_num(b);
@@ -292,6 +292,7 @@ char *div_help(char *a, char *b, char **c1, int sys, int *dig)
     int i = 1;
 
     char *tmp1 = malloc(strlen(a)+A);
+    ///char tmp1[strlen(a)+A];
     char *c = *c1, *tmp = tmp1;
     
     str_cpy(c, b);
@@ -329,6 +330,7 @@ char *div_(char *a, char *b, char **c1, int sys)
     
     *c1 = malloc(n+A);
     char *curr1 = malloc(m+A), *prev1 = malloc(m+A), *tmp1 = malloc(m+A), ch;
+    //char curr1[m+A], prev1[m+A], tmp1[m+A], ch;
     char *c = *c1, *curr = curr1, *prev = prev1, *tmp = tmp1;
 
     for(i=0; i<n; i++) c[i] = '0';
@@ -506,135 +508,142 @@ char *basic_pow(char *b, char *e, char **c1, int sys)
 
 int main(int argc, char *argv[])
 {
-    FILE *in;
-    if(argc == 2) in = fopen(argv[1], "r");
-    else in = fopen("in.txt", "r");
-    FILE *out = fopen("out.txt", "w");
-    //FILE *out = stdout;
+    FILE *in, *out;
+    in = fopen("in.txt", "r");
+    if(argc == 1) out = fopen("out.txt", "w");
     
-    char *a, *b, *c, *d, *bin, *line, op, ch;
-    int sys, sys1, sys2, n, m, line_len, err;
+    char *a, *b, *c, *bin, *line, op, file_name[B], file_index[B];
+    int sys, sys1, sys2, n, m, line_len, err, i = 1;
     
     while(1)
     {
-    line = read(in, L);
-    
-    bin = read(in, L);
-    
-    line_len = strlen(line);
-    if(line_len == 0) break;
-    line[line_len] = '\0';
-    line_len = strlen(line);
-    
-    op = line[0];
+        line = read(in, L);
+        
+        bin = read(in, L);
+        
+        line_len = strlen(line);
+        if(line_len == 0) break;
+        line[line_len] = '\0';
+        line_len = strlen(line);
 
-    if(op >= 48 && op <= 57)
-    {
-        //konwersja
-        if(line[1] == ' ')
+        if( argc == 2 && str_cmp(argv[1], "1") == 0 )
         {
-            sys1 = line[0]-'0';
-            if(line_len == 3) sys2 = line[2]-'0';
-            else sys2 = 10+line[3]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
+            str_cpy(file_name, "out");
+            file_index[0] = i+'0'; file_index[1] = '\0';
+            strcat( file_name, file_index );
+            strcat(file_name, ".txt");
+            out = fopen(file_name, "w");
+        }
+        
+        op = line[0];
+
+        if(op >= 48 && op <= 57)
+        {
+            //conversion
+            if(line[1] == ' ')
+            {
+                sys1 = line[0]-'0';
+                if(line_len == 3) sys2 = line[2]-'0';
+                else sys2 = 10+line[3]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
+            }
+            else
+            {
+                sys1 = 10+line[1]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
+                if(line_len == 4) sys2 = line[3]-'0';
+                else sys2 = 10+line[4]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
+            }
+            
+            a = read(in, L);
+            
+            bin = read(in, L);
+            bin = read(in, L);
+
+            n = strlen(a);
+
+            a[n] = '\0';
+            
+            fprintf(out, "%s\n\n%s\n\n", line, a);
+            
+            err = input_analysis_conv(a, sys1);
+            if( err != 0 )
+            {
+                if( err == 1 ) fprintf( out, "NaN\n\n" );
+                if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n" );
+                continue;
+            }
         }
         else
         {
-            sys1 = 10+line[1]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
-            if(line_len == 4) sys2 = line[3]-'0';
-            else sys2 = 10+line[4]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
+            //operation
+            if(line_len == 3) sys = line[2]-'0';
+            else sys = 10+line[3]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
+
+            a = read(in, L);
+            
+            bin = read(in, L);
+            
+            b = read(in, L);
+            
+            bin = read(in, L);
+            bin = read(in, L);
+
+            n = strlen(a);
+            m = strlen(b);
+
+            a[n] = '\0';
+            b[m] = '\0';
+
+            n = strlen(a);
+            m = strlen(b);
+
+            fprintf(out, "%s\n\n%s\n\n%s\n\n", line, a, b);
+
+            err = input_analysis(a, b, sys, op);
+            if( err != 0 ) 
+            {
+                if( err == 1 ) fprintf( out, "NaN\n\n" );
+                if( err == 2 ) fprintf( out, "DIVISION_BY_ZERO\n\n" );
+                if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n" );
+                continue;
+            }
         }
         
-        a = read(in, L);
-        
-        bin = read(in, L);
-        bin = read(in, L);
-
-        n = strlen(a);
-
-        a[n] = '\0';
-        
-        fprintf(out, "%s\n\n%s\n\n", line, a);
-        
-        err = input_analysis_conv(a, sys1);
-        if( err != 0 )
+        if(op == '+')
         {
-            if( err == 1 ) fprintf( out, "NaN\n\n\n" );
-            if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n\n" );
-            continue;
+            fprintf(out, "%s\n\n", add(a, b, &c, sys));
         }
-    }
-    else
-    {
-        //działanie
-        if(line_len == 3) sys = line[2]-'0';
-        else sys = 10+line[3]-'0'; //korzysta z faktu, że nie ma systemów 20stkowych i większych
-
-        a = read(in, L);
-        
-        bin = read(in, L);
-        
-        b = read(in, L);
-        
-        bin = read(in, L);
-        bin = read(in, L);
-
-        n = strlen(a);
-        m = strlen(b);
-
-        a[n] = '\0';
-        b[m] = '\0';
-
-        n = strlen(a);
-        m = strlen(b);
-
-        fprintf(out, "%s\n\n%s\n\n%s\n\n", line, a, b);
-
-        err = input_analysis(a, b, sys, op);
-        if( err != 0 ) 
+        else if(op == '-')
         {
-            if( err == 1 ) fprintf( out, "NaN\n\n\n" );
-            if( err == 2 ) fprintf( out, "DIVISION_BY_ZERO\n\n\n" );
-            if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n\n" );
-            //fprintf( out, "error code %i\n\n", err );
-            continue;
+            fprintf(out, "%s\n\n", subtr(a, b, &c, sys));
         }
-    }
-    
-    if(op == '+')
-    {
-        fprintf(out, "%s\n\n\n", add(a, b, &c, sys));
-    }
-    else if(op == '-')
-    {
-        fprintf(out, "%s\n\n\n", subtr(a, b, &c, sys));
-    }
-    else if(op == '*')
-    {
-        fprintf(out, "%s\n\n\n", mult(a, b, &c, sys));
-    }
-    else if(op == '/') 
-    {
-        fprintf(out, "%s\n\n\n", div_(a, b, &c, sys));
-    }
-    
-    else if(op == '%') 
-    {
-        fprintf(out, "%s\n\n\n", mod(a, b, &c, sys));
-    }
-    else if(op == '^') 
-    {
-        fprintf(out, "%s\n\n\n", basic_pow(a, b, &c, sys));
-    }
-    else 
-    {
-        b = sys_conv(sys1, sys2, &b);
-        fprintf(out, "%s\n\n\n", num_conv(a, b, &c, sys1, sys2));
-    }
-    
+        else if(op == '*')
+        {
+            fprintf(out, "%s\n\n", mult(a, b, &c, sys));
+        }
+        else if(op == '/') 
+        {
+            fprintf(out, "%s\n\n", div_(a, b, &c, sys));
+        }
+        
+        else if(op == '%') 
+        {
+            fprintf(out, "%s\n\n", mod(a, b, &c, sys));
+        }
+        else if(op == '^') 
+        {
+            fprintf(out, "%s\n\n", basic_pow(a, b, &c, sys));
+        }
+        else 
+        {
+            b = sys_conv(sys1, sys2, &b);
+            fprintf(out, "%s\n\n", num_conv(a, b, &c, sys1, sys2));
+        }
+        i++;
     }
 
-    free(a); free(b); free(line); free(bin);
-    free(c); //czasami (rzadko) przy div_ byl problem z free(c)
+    free(a); free(b); 
+    free(c);
+    free(line); free(bin);
     
     return 0;
 }

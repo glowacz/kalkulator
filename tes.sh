@@ -6,10 +6,8 @@ g++ -o3 -o gen gen.cpp
 
 for i in {1..100000}
 do
-    ./gen > in_tes.txt
-    #./wzo < kalk.in > wzo.out
-    #./bru < kalk.in > bru.out
-    ./wzo in_tes.txt
+    ./gen > in.txt
+    ./wzo
     ./bru > out_bru.txt
     diff -q out.txt out_bru.txt || break
     echo "TEST $i   OK"

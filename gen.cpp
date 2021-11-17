@@ -63,7 +63,17 @@ int main(){
     l_op = rand()%O+1;
     l_op = O;
     //l_op = 10;
-    uniform_int_distribution<> wyb_op(3, 3);
+    op = "+*-/%^k";
+    /*
+    0 dod
+    1 mno
+    2 odejm
+    3 dziel
+    4 mod
+    5 pow
+    6 konw
+    */
+    uniform_int_distribution<> wyb_op(0, 5);
     uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<ll> distr(M, N);
     uniform_int_distribution<ll> distr_mult(N1/M, N1);
@@ -77,6 +87,7 @@ int main(){
     sys = wyb_sys(eng);
     a = distr(eng);
     b = distr(eng);
+    b = distr_mult(eng);
     //b = distr_small(eng);
     //a = 0;
 
@@ -85,9 +96,11 @@ int main(){
     if(op[nr_op] == '*'){
         a = distr_mult(eng);
         b = distr_mult(eng);
+        b = distr_small(eng);
     }
 
     if(op[nr_op] == '/') b = distr_mult(eng); //duzy wynik dzielenia, latwo wywala
+    if(op[nr_op] == '-') b = distr_mult(eng); //duzy wynik odejmowania
 
     /*while( a % b == 0 ) { //nie zachodzi podzielność
         a = distr_small(eng); b = distr_small(eng);

@@ -5,6 +5,7 @@ using namespace std;
 const int N = 3000;
 const int N1 = 30;
 const int N2 = 300;
+const int N3 = 100;
 const int B = 15;
 const int E = 3;
 const int O = 100;
@@ -20,13 +21,23 @@ int main(){
     srand(time(0));
     l_op = rand()%O+1;
     l_op = O;
-    l_op = 5;
+    l_op = 10;
+
+    /*
+    0 dod
+    1 mno
+    2 dziel
+    3 mod
+    4 pow
+    5 konw
+    */
     
-    uniform_int_distribution<> wyb_op(3, 3);
+    uniform_int_distribution<> wyb_op(5, 5);
     uniform_int_distribution<> wyb_sys(2, 16);
     uniform_int_distribution<> dl(N-B, N);
     uniform_int_distribution<> dl1(N1-B, N1);
     uniform_int_distribution<> dl2(N1, N2);
+    uniform_int_distribution<> dl3(N1, N3);
     uniform_int_distribution<> distr_b(1, B);
     uniform_int_distribution<> distr_e(1, E);
     uniform_int_distribution<> wyb_cy(0, 15);
@@ -42,8 +53,11 @@ int main(){
         n = dl(eng);
         m = dl(eng);
 
+        if(op[nr_op] == '/') m = dl2(eng); //duzy wynik dzielenia, latwo wywala
+
         //n = dl1(eng); m = dl1(eng); //dl 20-30
-        //n = dl2(eng); m = dl2(eng); //dl 280-300
+        //n = dl3(eng); m = dl3(eng); //dl 70-100
+        n = dl2(eng); m = dl2(eng); //dl 280-300
 
         //n = N-N2, m = N; //zawsze duze
 

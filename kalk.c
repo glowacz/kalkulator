@@ -8,6 +8,190 @@
 #define BIG_BUFF 100000
 #define L 4
 
+char *read(FILE* file, size_t base_len);
+
+void str_cpy(char *a, char *b);
+
+int str_len(char *a); //currently not utilized, it is significantly slower than strlen from <string.h>
+
+int str_cmp(char *a, char *b);
+
+void let_to_num(char *str);
+
+void num_to_let(char *str);
+
+int input_analysis(char *a, char *b, int sys, char op);
+
+int input_analysis_conv(char *a, int sys);
+
+int pow_(int b, int e);
+
+char *add(char *a, char *b, char **c1, int sys);
+
+char *mult(char *a, char *b, char **c1, int sys);
+
+char *subtr(char *a, char *b, char **c1, int sys);
+
+char *div_help(char *a, char *b, char **c1, int sys, int *dig);
+
+char *div_(char *a, char *b, char **c1, int sys);
+
+char *mod(char *a, char *b, char **c1, int sys);
+
+char *sys_conv(int sys1, int sys2, char **b1);
+
+int dig_conv(char *str, int sys1, int sys2);
+
+char *num_conv(char *a, char *b, char **c1, int sys, int sys2);
+
+char *basic_pow(char *b, char *e, char **c1, int sys);
+
+int main(int argc, char *argv[])
+{
+    FILE *in, *out;
+    in = fopen("in.txt", "r");
+    if(argc == 1) out = fopen("out.txt", "w");
+    
+    char *a, *b, *c, *bin, *line, op, file_name[B], file_index[B];
+    int sys, sys1, sys2, n, m, line_len, err, i = 1;
+    
+    while(1)
+    {
+        a = (char *)malloc(1), b = (char *)malloc(1), c = (char *)malloc(1), bin = (char *)malloc(1), line = (char *)malloc(1);
+
+        line = read(in, L);
+        
+        bin = read(in, L);
+        
+        line_len = strlen(line);
+        if(line_len == 0) break;
+        line[line_len] = '\0';
+        line_len = strlen(line);
+
+        if( argc == 2 && str_cmp(argv[1], "1") == 0 )
+        {
+            str_cpy(file_name, "out");
+            file_index[0] = i+'0'; file_index[1] = '\0';
+            strcat( file_name, file_index );
+            strcat(file_name, ".txt");
+            out = fopen(file_name, "w");
+        }
+        
+        op = line[0];
+
+        if(op >= 48 && op <= 57)
+        {
+            //conversion
+            if(line[1] == ' ')
+            {
+                sys1 = line[0]-'0';
+                if(line_len == 3) sys2 = line[2]-'0';
+                else sys2 = 10+line[3]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
+            }
+            else
+            {
+                sys1 = 10+line[1]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
+                if(line_len == 4) sys2 = line[3]-'0';
+                else sys2 = 10+line[4]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
+            }
+            
+            a = read(in, L);
+            
+            bin = read(in, L);
+            bin = read(in, L);
+
+            n = strlen(a);
+
+            a[n] = '\0';
+            
+            fprintf(out, "%s\n\n%s\n\n", line, a);
+            
+            err = input_analysis_conv(a, sys1);
+            if( err != 0 )
+            {
+                if( err == 1 ) fprintf( out, "NaN\n\n" );
+                if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n" );
+                continue;
+            }
+        }
+        else
+        {
+            //operation
+            if(line_len == 3) sys = line[2]-'0';
+            else sys = 10+line[3]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
+
+            a = read(in, L);
+            
+            bin = read(in, L);
+            
+            b = read(in, L);
+            
+            bin = read(in, L);
+            bin = read(in, L);
+
+            n = strlen(a);
+            m = strlen(b);
+
+            a[n] = '\0';
+            b[m] = '\0';
+
+            n = strlen(a);
+            m = strlen(b);
+
+            fprintf(out, "%s\n\n%s\n\n%s\n\n", line, a, b);
+
+            err = input_analysis(a, b, sys, op);
+            if( err != 0 ) 
+            {
+                if( err == 1 ) fprintf( out, "NaN\n\n" );
+                if( err == 2 ) fprintf( out, "DIVISION_BY_ZERO\n\n" );
+                if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n" );
+                if( err == 4 ) fprintf( out, "SUBTRACTING_BIGGER_NUMBER_FROM_SMALLER\n\n" );
+                i++;
+                continue;
+            }
+        }
+        
+        if(op == '+')
+        {
+            fprintf(out, "%s\n\n", add(a, b, &c, sys));
+        }
+        else if(op == '-')
+        {
+            fprintf(out, "%s\n\n", subtr(a, b, &c, sys));
+        }
+        else if(op == '*')
+        {
+            fprintf(out, "%s\n\n", mult(a, b, &c, sys));
+        }
+        else if(op == '/') 
+        {
+            fprintf(out, "%s\n\n", div_(a, b, &c, sys));
+        }
+        
+        else if(op == '%') 
+        {
+            fprintf(out, "%s\n\n", mod(a, b, &c, sys));
+        }
+        else if(op == '^') 
+        {
+            fprintf(out, "%s\n\n", basic_pow(a, b, &c, sys));
+        }
+        else 
+        {
+            b = sys_conv(sys1, sys2, &b);
+            fprintf(out, "%s\n\n\n", num_conv(a, b, &c, sys1, sys2));
+        }
+        i++;
+        
+        free(a); free(b); 
+        free(c);
+        free(line); free(bin);
+    }
+    
+    return 0;
+}
+
 char *read(FILE* file, size_t base_len)
 {
     char *str;
@@ -161,7 +345,8 @@ char *add(char *a, char *b, char **c1, int sys)
 
     int dig[n+A];
 
-    *c1 = malloc(n+A);
+    *c1 = (char *)realloc(*c1, n+A);
+    if(!*c1) printf("invalid pointer\n");
     char *c = *c1;
 
     for(i=n; i>=0; i--) dig[i] = 0;
@@ -208,7 +393,7 @@ char *mult(char *a, char *b, char **c1, int sys)
 
     int dig_a[n+A], dig_b[m+A], dig[n+m+A], dig_main[n+m+A];
     
-    *c1 = malloc(n+m+A);
+    *c1 = (char *)realloc(*c1, n+m+A);
     char *c = *c1;
 
     for(i=0; i<n; i++) dig_a[i] = a[i]-'0';
@@ -266,8 +451,8 @@ char *subtr(char *a, char *b, char **c1, int sys)
     
     int dig[n+A];
     
-    *c1 = malloc(n+A);
-    char *c = *c1, *a1 = malloc(n+A);
+    *c1 = (char *)realloc(*c1, n+A);
+    char *c = *c1, *a1 = (char *)malloc(n+A);
 
     let_to_num(a);
     let_to_num(b);
@@ -308,8 +493,10 @@ char *div_help(char *a, char *b, char **c1, int sys, int *dig)
 {
     int i = 1;
 
-    char *tmp1 = malloc(strlen(a)+A);
+    char *tmp1 = (char *)malloc(strlen(a)+A);
     char *c = *c1, *tmp = tmp1;
+    //char *tmp = (char *)malloc(strlen(a)+A);
+    //char *c = *c1;
     
     str_cpy(c, b);
  
@@ -317,21 +504,29 @@ char *div_help(char *a, char *b, char **c1, int sys, int *dig)
     
     while( strlen(c) < strlen(a) || (strlen(c) == strlen(a) && str_cmp(c, a) < 0) )
     {
-        tmp = add(c, b, &tmp, sys);
+        //printf("tmp1 = %s, %i\n", tmp1, &tmp1);
+        //printf("tmp = %s\n", tmp);
+        //tmp = add(c, b, &tmp, sys);
+        tmp = add(c, b, &tmp1, sys);
         str_cpy(c, tmp);
         i++;
     }
+    //printf("hello\n");
     
     if(str_cmp(a, c) != 0) 
     {
         i--;
-        tmp = subtr(c, b, &tmp, sys);
+        //tmp = subtr(c, b, &tmp, sys);
+        tmp = subtr(c, b, &tmp1, sys);
         str_cpy(c, tmp);
     }
     
     *dig = i;
 
+    //printf("tmp1 = %s\n", tmp1);
+    //printf("tmp = %s\n", tmp);
     free(tmp1);
+    //free(tmp);
     
     return c;
 }
@@ -344,8 +539,8 @@ char *div_(char *a, char *b, char **c1, int sys)
 
     int dig_a[n+A], dig_b[m+A], dig_curr[n+A], dig = 0;
     
-    *c1 = malloc(n+A);
-    char *curr1 = malloc(m+A), *prev1 = malloc(m+A), *tmp1 = malloc(m+A), ch;
+    *c1 = (char *)realloc(*c1, n+A);
+    char *curr1 = (char *)malloc(m+A), *prev1 = (char *)malloc(m+A), *tmp1 = (char *)malloc(m+A), ch;
     char *c = *c1, *curr = curr1, *prev = prev1, *tmp = tmp1;
 
     for(i=0; i<n; i++) c[i] = '0';
@@ -366,12 +561,14 @@ char *div_(char *a, char *b, char **c1, int sys)
         
         str_cpy(prev, curr);
         
-        tmp = div_help(curr, b, &tmp, sys, &dig);
+        tmp = div_help(curr, b, &tmp1, sys, &dig);
         str_cpy(curr, tmp);
         
         c[i] = dig+'0';
+
+        //printf("%d\n", dig);
         
-        tmp = subtr(prev, curr, &tmp, sys);
+        tmp = subtr(prev, curr, &tmp1, sys);
         str_cpy(curr, tmp);
         
         a[i+1] = ch;
@@ -399,17 +596,17 @@ char *mod(char *a, char *b, char **c1, int sys)
 {
     int n = strlen(a), m = strlen(b);
     
-    *c1 = malloc(n+A);
-    char *tmp1 = malloc(n+A);
+    *c1 = (char *)realloc(*c1, n+A);
+    char *tmp1 = (char *)malloc(n+A);
     char *c = *c1, *tmp = tmp1;
     
-    tmp = div_(a, b, &tmp, sys);
+    tmp = div_(a, b, &tmp1, sys);
     str_cpy(c, tmp);
     
-    tmp = mult(c, b, &tmp, sys);
+    tmp = mult(c, b, &tmp1, sys);
     str_cpy(c, tmp);
     
-    tmp = subtr(a, c, &tmp, sys);
+    tmp = subtr(a, c, &tmp1, sys);
     str_cpy(c, tmp);
     
     free(tmp1);
@@ -421,7 +618,8 @@ char *sys_conv(int sys1, int sys2, char **b1)
 {
     int curr = sys2, i = 0, pom[B];
 
-    *b1 = malloc(B);
+    //*b1 = (char *)malloc(B);
+    *b1 = (char *)realloc(*b1, B);
     char *b = *b1;
 
     while( curr != 0 )
@@ -462,25 +660,31 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
     int i = 0, n = strlen(a);
     int cy[n*4+A];
     
-    *c1 = malloc(n*4+A);
-    char *curr1 = malloc(n+A), *inv1 = malloc(n*4+A);
+    *c1 = (char *)realloc(*c1, n*4+A);
+    char *curr1 = (char *)malloc(n+A), *inv1 = (char *)malloc(n*4+A);
     char *c = *c1, *curr = curr1, *inv = inv1;
     
     str_cpy(curr, a);
 
     while( curr[0] != '0' )
     {
-        c = mod(curr, b, &c, sys);
+        c = mod(curr, b, c1, sys);
         
         inv[i] =  dig_conv(c, sys, sys2)+'0';
         
-        c = div_(curr, b, &c, sys);
+        c = div_(curr, b, c1, sys);
         str_cpy(curr, c);
         
         i++;
     }
     
     int m = i;
+    //printf("%d\n%d\n%d\n", n, m, n*4+A);
+    //for(i=0; i<m; i++) c[i] = inv[m-i-1];
+    *c1 = (char *)realloc(*c1, n*4+A);
+    c = *c1; //uzywanie jednej zmiennej do wielu rzeczy tak sie konczy :(
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!IMPORTANTTTTTT
+    //DLUGO NIE USUWAC AKURAT TYCH KOMENTARZY
     for(i=0; i<m; i++) c[i] = inv[m-i-1];
     c[m] = '\0';
     
@@ -499,7 +703,7 @@ char *basic_pow(char *b, char *e, char **c1, int sys)
     n = strlen(b);
     m = strlen(e);
     
-    *c1 = malloc(BIG_BUFF);
+    *c1 = (char *)realloc(*c1, BIG_BUFF);
     char *tmp1 = malloc(BIG_BUFF), *curr_e1 = malloc(m+A);
     char *c = *c1, *tmp = tmp1, *curr_e = curr_e1;
     
@@ -522,150 +726,4 @@ char *basic_pow(char *b, char *e, char **c1, int sys)
     free(curr_e1);
 
     return c;
-}
-
-
-int main(int argc, char *argv[])
-{
-    FILE *in, *out;
-    in = fopen("in.txt", "r");
-    if(argc == 1) out = fopen("out.txt", "w");
-    
-    char *a = malloc(1), *b = malloc(1), *c = malloc(1), *bin = malloc(1), *line = malloc(1), 
-    op, file_name[B], file_index[B];
-    int sys, sys1, sys2, n, m, line_len, err, i = 1;
-    
-    while(1)
-    {   
-        line = read(in, L);
-        
-        bin = read(in, L);
-        
-        line_len = strlen(line);
-        if(line_len == 0) break;
-        line[line_len] = '\0';
-        line_len = strlen(line);
-
-        if( argc == 2 && str_cmp(argv[1], "1") == 0 )
-        {
-            str_cpy(file_name, "out");
-            file_index[0] = i+'0'; file_index[1] = '\0';
-            strcat( file_name, file_index );
-            strcat(file_name, ".txt");
-            out = fopen(file_name, "w");
-        }
-        
-        op = line[0];
-
-        if(op >= 48 && op <= 57)
-        {
-            //conversion
-            if(line[1] == ' ')
-            {
-                sys1 = line[0]-'0';
-                if(line_len == 3) sys2 = line[2]-'0';
-                else sys2 = 10+line[3]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
-            }
-            else
-            {
-                sys1 = 10+line[1]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
-                if(line_len == 4) sys2 = line[3]-'0';
-                else sys2 = 10+line[4]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
-            }
-            
-            a = read(in, L);
-            
-            bin = read(in, L);
-            bin = read(in, L);
-
-            n = strlen(a);
-
-            a[n] = '\0';
-            
-            fprintf(out, "%s\n\n%s\n\n", line, a);
-            
-            err = input_analysis_conv(a, sys1);
-            if( err != 0 )
-            {
-                if( err == 1 ) fprintf( out, "NaN\n\n" );
-                if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n" );
-                continue;
-            }
-        }
-        else
-        {
-            //operation
-            if(line_len == 3) sys = line[2]-'0';
-            else sys = 10+line[3]-'0'; //makes use of the fact that there are no base-20 or larger systems in project requirements
-
-            a = read(in, L);
-            
-            bin = read(in, L);
-            
-            b = read(in, L);
-            
-            bin = read(in, L);
-            bin = read(in, L);
-
-            n = strlen(a);
-            m = strlen(b);
-
-            a[n] = '\0';
-            b[m] = '\0';
-
-            n = strlen(a);
-            m = strlen(b);
-
-            fprintf(out, "%s\n\n%s\n\n%s\n\n", line, a, b);
-
-            err = input_analysis(a, b, sys, op);
-            if( err != 0 ) 
-            {
-                if( err == 1 ) fprintf( out, "NaN\n\n" );
-                if( err == 2 ) fprintf( out, "DIVISION_BY_ZERO\n\n" );
-                if( err == 3 ) fprintf( out, "TRAILING_ZEROES\n\n" );
-                if( err == 4 ) fprintf( out, "SUBTRACTING_BIGGER_NUMBER_FROM_SMALLER\n\n" );
-                i++;
-                continue;
-            }
-        }
-        
-        if(op == '+')
-        {
-            fprintf(out, "%s\n\n", add(a, b, &c, sys));
-        }
-        else if(op == '-')
-        {
-            fprintf(out, "%s\n\n", subtr(a, b, &c, sys));
-        }
-        else if(op == '*')
-        {
-            fprintf(out, "%s\n\n", mult(a, b, &c, sys));
-        }
-        else if(op == '/') 
-        {
-            fprintf(out, "%s\n\n", div_(a, b, &c, sys));
-        }
-        
-        else if(op == '%') 
-        {
-            fprintf(out, "%s\n\n", mod(a, b, &c, sys));
-        }
-        else if(op == '^') 
-        {
-            fprintf(out, "%s\n\n", basic_pow(a, b, &c, sys));
-        }
-        else 
-        {
-            b = sys_conv(sys1, sys2, &b);
-            fprintf(out, "%s\n\n", num_conv(a, b, &c, sys1, sys2));
-        }
-        i++;
-    }
-
-    free(a); free(b); 
-    free(c);
-    free(line); free(bin);
-    
-    return 0;
 }

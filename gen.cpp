@@ -62,7 +62,7 @@ int main(){
     srand(time(0));
     l_op = rand()%O+1;
     l_op = O;
-    //l_op = 10;
+    l_op = 2;
     op = "+*-/%^k";
     /*
     0 dod

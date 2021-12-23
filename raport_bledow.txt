@@ -1,0 +1,5 @@
+Problem był z usuwaniem zer wiodących:
+np. div_help wywoływało tmp = add(.., &tmp, ...)
+więc po 1. obrocie pętli tmp wskazywało już na co innego niż tmp1
+add reallocowało ten obszar pamięci (wskazywany przez tmp)
+a free było wykonywane na tmp1

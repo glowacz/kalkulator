@@ -1,12 +1,12 @@
 1. Uruchomienie programu
 
 Program jest zwykłą aplikacją konsolową - plikiem wykonywalnym o nazwie "kalk.exe", zatem można uruchomić go poprzez kliknięcie na plik wykonywalny. 
-Inną możliwością jest odpalenie go z poziomu konsoli (poprzez wpisanie "kalk.exe").
+Inną możliwością jest odpalenie go z poziomu wiersza poleceń (poprzez wpisanie "kalk.exe").
 Oczywiście zintegrowane środowiska programistyczne także umożliwiają odpalenie programu.
 
 W folderze z programem powinien się znajdować plik "in.txt", zawierający dane wejściowe.
 
-Istnieje opcja podania mu argumentu, jeśli będzie to "1" to wypisze każdą operację do osobnego pliku ("out1.txt", "out2.txt" itd.).
+Istnieje opcja podania mu argumentu, jeśli będzie to "1" ("kalk.exe 1")to wypisze każdą operację do osobnego pliku ("out1.txt", "out2.txt" itd.).
 W przeciwnym przypadku wypisze wszystkie odpowiedzi do pliku "out.txt".
 
 
@@ -81,7 +81,13 @@ lub
 <dalsze odpowiedzi>
 
 
-4. Struktura programu
+4. Kompilacja
+
+Osobiście kompilowałem program za pomocą gcc i z flagą o3:
+gcc -o3 -o kalk kalk.c
+
+
+5. Struktura programu
 
 Program deklaruje początkowe zmienne, w szczególności tworzy zmienne typu FILE* i otwiera odpowiednie pliki.
 

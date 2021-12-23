@@ -2,15 +2,15 @@
 #define ll long long
 using namespace std;
 
-const int N = 3000;
+const int N = 9000;
 const int N1 = 30;
-const int N2 = 300;
+const int N2 = 900;
 const int N3 = 100;
 const int B = 15;
-const int E = 3;
+const int E = 2;
 const int O = 100;
 
-string op = "+*/%^k-";
+string op = "+*-/%^k";
 int sys = 10, nr_op, l_op, n, m;
 string a1, b1, cy = "0123456789ABCDEF";
 
@@ -21,22 +21,27 @@ int main(){
     srand(time(0));
     l_op = rand()%O+1;
     l_op = O;
-    l_op = 100;
+    l_op = 5;
+    l_op = 1;
 
     /*
     0 dod
     1 mno
-    2 dziel
-    3 mod
-    4 pow
-    5 konw
+    2 odejm
+    3 dziel
+    4 mod
+    5 pow
+    6 konw
     */
     
-    uniform_int_distribution<> wyb_op(0, 6);
+    uniform_int_distribution<> wyb_op(6, 6);
     uniform_int_distribution<> wyb_sys(2, 16);
-    uniform_int_distribution<> dl(N-B, N);
+    //uniform_int_distribution<> wyb_sys(10, 10);
+    //uniform_int_distribution<> dl(N-N2, N);
+    uniform_int_distribution<> dl(1, N);
     uniform_int_distribution<> dl1(N1-B, N1);
-    uniform_int_distribution<> dl2(N1, N2);
+    //uniform_int_distribution<> dl2(N1, N2);
+    uniform_int_distribution<> dl2(1, N2);
     uniform_int_distribution<> dl3(N1, N3);
     uniform_int_distribution<> distr_b(1, B);
     uniform_int_distribution<> distr_e(1, E);
@@ -50,19 +55,18 @@ int main(){
 
         nr_op = wyb_op(eng);
 
-        n = dl(eng);
-        m = dl(eng);
+        n = dl(eng); m = dl(eng); //1-9000
 
-        if(op[nr_op] == '/') m = dl2(eng); //duzy wynik dzielenia, latwo wywala
-
-        //n = dl1(eng); m = dl1(eng); //dl 20-30
-        //n = dl3(eng); m = dl3(eng); //dl 70-100
-        n = dl2(eng); m = dl2(eng); //dl 280-300
-
-        //n = N-N2, m = N; //zawsze duze
+        //if(op[nr_op] == '/') m = dl2(eng); //duzy wynik dzielenia, latwo wywala
 
         //n = distr_e(eng); m = distr_e(eng); //malutkie liczby
-        //n = distr_b(eng); m = distr_b(eng); //male liczby
+        //n = distr_b(eng); m = distr_b(eng); //dl 1-15
+        //n = dl1(eng); m = dl1(eng); //dl 20-30
+        //n = dl3(eng); m = dl3(eng); //dl 30-100
+        //if(nr_op > 0) n = dl2(eng); m = dl2(eng); //dl 1-900
+        //n = N-N2, m = N; //zawsze duze, nie wylosuje sie mala
+
+        
 
         if(op[nr_op] == '^'){
             n = distr_b(eng);

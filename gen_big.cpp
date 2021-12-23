@@ -22,7 +22,7 @@ int main(){
     l_op = rand()%O+1;
     l_op = O;
     l_op = 5;
-    l_op = 1;
+    //l_op = 1;
 
     /*
     0 dod
@@ -63,7 +63,7 @@ int main(){
         //n = distr_b(eng); m = distr_b(eng); //dl 1-15
         //n = dl1(eng); m = dl1(eng); //dl 20-30
         //n = dl3(eng); m = dl3(eng); //dl 30-100
-        //if(nr_op > 0) n = dl2(eng); m = dl2(eng); //dl 1-900
+        if(nr_op > 0) n = dl2(eng); m = dl2(eng); //dl 1-900
         //n = N-N2, m = N; //zawsze duze, nie wylosuje sie mala
 
         

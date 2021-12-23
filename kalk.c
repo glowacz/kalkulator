@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
     while(1)
     {
         a = (char *)malloc(1), b = (char *)malloc(1), c = (char *)malloc(1), bin = (char *)malloc(1), line = (char *)malloc(1);
+        //a = (char *)malloc(1), b = (char *)malloc(1), bin = (char *)malloc(1), line = (char *)malloc(1);
 
         line = read(in, L);
         
@@ -713,10 +714,10 @@ char *basic_pow(char *b, char *e, char **c1, int sys)
     int i = 0;
     while( str_cmp(e, curr_e) != 0 )
     {
-        tmp = mult(c, b, &tmp, sys);
+        tmp = mult(c, b, &tmp1, sys);
         str_cpy(c, tmp);
         
-        tmp = add(curr_e, "1", &tmp, sys);
+        tmp = add(curr_e, "1", &tmp1, sys);
         str_cpy(curr_e, tmp);
         
         i++;

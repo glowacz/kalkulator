@@ -57,12 +57,17 @@ int main(int argc, char *argv[])
     
     while(1)
     {
-        a = (char *)malloc(1), b = (char *)malloc(1), c = (char *)malloc(1), bin = (char *)malloc(1), line = (char *)malloc(1);
+        /*a = (char *)malloc(1), 
+        b = (char *)malloc(1), 
+        c = (char *)malloc(1), 
+        bin = (char *)malloc(1), 
+        line = (char *)malloc(1);*/
         //a = (char *)malloc(1), b = (char *)malloc(1), bin = (char *)malloc(1), line = (char *)malloc(1);
 
         line = read(in, L);
-        
+        //free(line);
         bin = read(in, L);
+        free(bin);
         
         line_len = strlen(line);
         if(line_len == 0) break;
@@ -99,7 +104,9 @@ int main(int argc, char *argv[])
             a = read(in, L);
             
             bin = read(in, L);
+            free(bin);
             bin = read(in, L);
+            free(bin);
 
             n = strlen(a);
 
@@ -124,11 +131,14 @@ int main(int argc, char *argv[])
             a = read(in, L);
             
             bin = read(in, L);
+            free(bin);
             
             b = read(in, L);
             
             bin = read(in, L);
+            free(bin);
             bin = read(in, L);
+            free(bin);
 
             n = strlen(a);
             m = strlen(b);
@@ -187,7 +197,8 @@ int main(int argc, char *argv[])
         
         free(a); free(b); 
         free(c);
-        free(line); free(bin);
+        free(line); 
+        //free(bin);
     }
     
     return 0;
@@ -198,20 +209,21 @@ char *read(FILE* file, size_t base_len)
     char *str;
     int ch;
     size_t len = 0;
-    str = realloc(NULL, base_len);
+    //str = realloc(NULL, base_len);
+    str = (char *)malloc(base_len);
     ch=getc(file);
     while(EOF != ch && ch != '\n')
     {
         str[len++] = ch;
         if(len == base_len)
         {
-            str = realloc(str, base_len+=L);
+            str = (char *)realloc(str, base_len+=L);
             if(!str) return str;
         }
         ch=getc(file);
     }
     str[len++] = '\0';
-    return realloc(str, len);
+    return (char *)realloc(str, len);
 }
 
 void str_cpy(char *a, char *b)
@@ -346,7 +358,8 @@ char *add(char *a, char *b, char **c1, int sys)
 
     int dig[n+A];
 
-    *c1 = (char *)realloc(*c1, n+A);
+    //*c1 = (char *)realloc(*c1, n+A);
+    *c1 = (char *)malloc(n+A);
     if(!*c1) printf("invalid pointer\n");
     char *c = *c1;
 
@@ -394,7 +407,8 @@ char *mult(char *a, char *b, char **c1, int sys)
 
     int dig_a[n+A], dig_b[m+A], dig[n+m+A], dig_main[n+m+A];
     
-    *c1 = (char *)realloc(*c1, n+m+A);
+    //*c1 = (char *)realloc(*c1, n+m+A);
+    *c1 = (char *)malloc(n+m+A);
     char *c = *c1;
 
     for(i=0; i<n; i++) dig_a[i] = a[i]-'0';
@@ -452,7 +466,8 @@ char *subtr(char *a, char *b, char **c1, int sys)
     
     int dig[n+A];
     
-    *c1 = (char *)realloc(*c1, n+A);
+    //*c1 = (char *)realloc(*c1, n+A);
+    *c1 = (char *)malloc(n+A);
     char *c = *c1, *a1 = (char *)malloc(n+A);
 
     let_to_num(a);
@@ -492,9 +507,11 @@ char *subtr(char *a, char *b, char **c1, int sys)
 
 char *div_help(char *a, char *b, char **c1, int sys, int *dig)
 {
-    int i = 1;
+    int i = 1, n = strlen(a);
 
-    char *tmp1 = (char *)malloc(strlen(a)+A);
+    //char *tmp1 = (char *)malloc(strlen(a)+A);
+    *c1 = (char *)malloc(n+A);
+    char *tmp1;
     char *c = *c1, *tmp = tmp1;
     //char *tmp = (char *)malloc(strlen(a)+A);
     //char *c = *c1;
@@ -510,6 +527,7 @@ char *div_help(char *a, char *b, char **c1, int sys, int *dig)
         //tmp = add(c, b, &tmp, sys);
         tmp = add(c, b, &tmp1, sys);
         str_cpy(c, tmp);
+        free(tmp1);
         i++;
     }
     //printf("hello\n");
@@ -520,13 +538,14 @@ char *div_help(char *a, char *b, char **c1, int sys, int *dig)
         //tmp = subtr(c, b, &tmp, sys);
         tmp = subtr(c, b, &tmp1, sys);
         str_cpy(c, tmp);
+        free(tmp1);
     }
     
     *dig = i;
 
     //printf("tmp1 = %s\n", tmp1);
     //printf("tmp = %s\n", tmp);
-    free(tmp1);
+    //free(tmp1);
     //free(tmp);
     
     return c;
@@ -538,11 +557,22 @@ char *div_(char *a, char *b, char **c1, int sys)
     n = strlen(a);
     m = strlen(b);
 
+    if(n < m){
+        *c1 = malloc(A);
+        char *c = *c1;
+        c[0] = '0'; c[1] = '\0';
+        return c;
+    }
+
     int dig_a[n+A], dig_b[m+A], dig_curr[n+A], dig = 0;
     
-    *c1 = (char *)realloc(*c1, n+A);
-    char *curr1 = (char *)malloc(m+A), *prev1 = (char *)malloc(m+A), *tmp1 = (char *)malloc(m+A), ch;
-    char *c = *c1, *curr = curr1, *prev = prev1, *tmp = tmp1;
+    //*c1 = (char *)realloc(*c1, n+A);
+    *c1 = (char *)malloc(n+A);
+    char *curr1 = (char *)malloc(m+A), 
+    *prev1 = (char *)malloc(m+A), *tmp1;
+    //*tmp1 = (char *)malloc(m+A);
+    //char *curr1 = (char *)malloc(m+A), *prev1 = (char *)malloc(m+A), *tmp1;
+    char *c = *c1, *curr = curr1, *prev = prev1, *tmp = tmp1, ch;
 
     for(i=0; i<n; i++) c[i] = '0';
 
@@ -564,6 +594,7 @@ char *div_(char *a, char *b, char **c1, int sys)
         
         tmp = div_help(curr, b, &tmp1, sys, &dig);
         str_cpy(curr, tmp);
+        free(tmp1);
         
         c[i] = dig+'0';
 
@@ -571,6 +602,7 @@ char *div_(char *a, char *b, char **c1, int sys)
         
         tmp = subtr(prev, curr, &tmp1, sys);
         str_cpy(curr, tmp);
+        free(tmp1);
         
         a[i+1] = ch;
         
@@ -588,7 +620,7 @@ char *div_(char *a, char *b, char **c1, int sys)
 
     free(curr1);
     free(prev1);
-    free(tmp1);
+    //free(tmp1);
     
     return c;
 }
@@ -597,19 +629,21 @@ char *mod(char *a, char *b, char **c1, int sys)
 {
     int n = strlen(a), m = strlen(b);
     
-    *c1 = (char *)realloc(*c1, n+A);
+    //*c1 = (char *)realloc(*c1, n+A);
+    *c1 = (char *)malloc(n+A);
     char *tmp1 = (char *)malloc(n+A);
     char *c = *c1, *tmp = tmp1;
     
     tmp = div_(a, b, &tmp1, sys);
     str_cpy(c, tmp);
+    free(tmp1);
     
     tmp = mult(c, b, &tmp1, sys);
     str_cpy(c, tmp);
+    free(tmp1);
     
     tmp = subtr(a, c, &tmp1, sys);
     str_cpy(c, tmp);
-    
     free(tmp1);
     
     return c;
@@ -619,8 +653,8 @@ char *sys_conv(int sys1, int sys2, char **b1)
 {
     int curr = sys2, i = 0, pom[B];
 
-    //*b1 = (char *)malloc(B);
-    *b1 = (char *)realloc(*b1, B);
+    *b1 = (char *)malloc(B);
+    //*b1 = (char *)realloc(*b1, B);
     char *b = *b1;
 
     while( curr != 0 )
@@ -661,7 +695,8 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
     int i = 0, n = strlen(a);
     int cy[n*4+A];
     
-    *c1 = (char *)realloc(*c1, n*4+A);
+    //*c1 = (char *)realloc(*c1, n*4+A);
+    *c1 = (char *)malloc(n*4+A);
     char *curr1 = (char *)malloc(n+A), *inv1 = (char *)malloc(n*4+A);
     char *c = *c1, *curr = curr1, *inv = inv1;
     
@@ -672,17 +707,22 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
         c = mod(curr, b, c1, sys);
         
         inv[i] =  dig_conv(c, sys, sys2)+'0';
+
+        free(*c1);
         
         c = div_(curr, b, c1, sys);
-        str_cpy(curr, c);
-        
+        //str_cpy(curr, c);
+        strcpy(curr, c); //TEN FRAGMENT JESZCZE DO LEPSZEGO POTESTOWANIA, 
+        //ALE CHYBA MOZNA UZYC WBUDOWANEGO STRCPY, CO PRZYSPIESZA PROGRAM OK 3-KROTNIE
+        free(*c1);
         i++;
     }
     
     int m = i;
     //printf("%d\n%d\n%d\n", n, m, n*4+A);
     //for(i=0; i<m; i++) c[i] = inv[m-i-1];
-    *c1 = (char *)realloc(*c1, n*4+A);
+    //*c1 = (char *)realloc(*c1, n*4+A);
+    *c1 = (char *)malloc(n*4+A);
     c = *c1; //uzywanie jednej zmiennej do wielu rzeczy tak sie konczy :(
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!IMPORTANTTTTTT
     //DLUGO NIE USUWAC AKURAT TYCH KOMENTARZY
@@ -704,8 +744,10 @@ char *basic_pow(char *b, char *e, char **c1, int sys)
     n = strlen(b);
     m = strlen(e);
     
-    *c1 = (char *)realloc(*c1, BIG_BUFF);
-    char *tmp1 = malloc(BIG_BUFF), *curr_e1 = malloc(m+A);
+    //*c1 = (char *)realloc(*c1, BIG_BUFF);
+    *c1 = (char *)malloc(BIG_BUFF);
+    //char *tmp1 = (char *)malloc(BIG_BUFF), *curr_e1 = (char *)malloc(m+A);
+    char *tmp1, *curr_e1 = (char *)malloc(m+A);
     char *c = *c1, *tmp = tmp1, *curr_e = curr_e1;
     
     c[0] = '1'; c[1] = '\0';
@@ -716,14 +758,16 @@ char *basic_pow(char *b, char *e, char **c1, int sys)
     {
         tmp = mult(c, b, &tmp1, sys);
         str_cpy(c, tmp);
+        free(tmp1);
         
         tmp = add(curr_e, "1", &tmp1, sys);
         str_cpy(curr_e, tmp);
+        free(tmp1);
         
         i++;
     }
 
-    free(tmp1);
+    //free(tmp1);
     free(curr_e1);
 
     return c;

@@ -62,7 +62,7 @@ int main(){
     srand(time(0));
     l_op = rand()%O+1;
     l_op = O;
-    l_op = 2;
+    //l_op = 1;
     op = "+*-/%^k";
     /*
     0 dod
@@ -73,8 +73,9 @@ int main(){
     5 pow
     6 konw
     */
-    uniform_int_distribution<> wyb_op(0, 5);
-    uniform_int_distribution<> wyb_sys(2, 16);
+    uniform_int_distribution<> wyb_op(1, 5);
+    uniform_int_distribution<> wyb_sys(11, 16);
+    //uniform_int_distribution<> wyb_sys(11, 16);
     uniform_int_distribution<ll> distr(M, N);
     uniform_int_distribution<ll> distr_mult(N1/M, N1);
     uniform_int_distribution<ll> distr_small(1, M);

@@ -20,7 +20,7 @@ mt19937 eng(chrono::steady_clock::now().time_since_epoch().count());
 int main(){
     srand(time(0));
     l_op = rand()%O+1;
-    //l_op = O;
+    l_op = O;
     //l_op = 20;
     l_op = 5;
 

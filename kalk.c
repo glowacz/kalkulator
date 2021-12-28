@@ -46,6 +46,8 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2);
 
 char *basic_pow(char *b, char *e, char **c1, int sys);
 
+char *quick_pow(char *b, char *e, char **c1, int sys);
+
 int main(int argc, char *argv[])
 {
     FILE *in, *out;
@@ -57,15 +59,7 @@ int main(int argc, char *argv[])
     
     while(1)
     {
-        /*a = (char *)malloc(1), 
-        b = (char *)malloc(1), 
-        c = (char *)malloc(1), 
-        bin = (char *)malloc(1), 
-        line = (char *)malloc(1);*/
-        //a = (char *)malloc(1), b = (char *)malloc(1), bin = (char *)malloc(1), line = (char *)malloc(1);
-
         line = read(in, L);
-        //free(line);
         bin = read(in, L);
         free(bin);
         
@@ -186,7 +180,8 @@ int main(int argc, char *argv[])
         }
         else if(op == '^') 
         {
-            fprintf(out, "%s\n\n", basic_pow(a, b, &c, sys));
+            //fprintf(out, "%s\n\n", basic_pow(a, b, &c, sys));
+            fprintf(out, "%s\n\n", quick_pow(a, b, &c, sys));
         }
         else 
         {
@@ -358,10 +353,12 @@ char *add(char *a, char *b, char **c1, int sys)
 
     int dig[n+A];
 
-    //*c1 = (char *)realloc(*c1, n+A);
     *c1 = (char *)malloc(n+A);
-    if(!*c1) printf("invalid pointer\n");
     char *c = *c1;
+    if(!*c1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
 
     for(i=n; i>=0; i--) dig[i] = 0;
     
@@ -397,6 +394,7 @@ char *add(char *a, char *b, char **c1, int sys)
 
 char *mult(char *a, char *b, char **c1, int sys)
 {
+    //printf("|%s|\n|%s|\n|%d|\n", a, b, sys);
     int n, m, i, j, i_c;
     
     n = strlen(a);
@@ -404,12 +402,16 @@ char *mult(char *a, char *b, char **c1, int sys)
 
     let_to_num(a);
     let_to_num(b);
+    //if(a != b) let_to_num(b);
 
     int dig_a[n+A], dig_b[m+A], dig[n+m+A], dig_main[n+m+A];
     
-    //*c1 = (char *)realloc(*c1, n+m+A);
     *c1 = (char *)malloc(n+m+A);
     char *c = *c1;
+    if(!*c1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
 
     for(i=0; i<n; i++) dig_a[i] = a[i]-'0';
     for(i=0; i<m; i++) dig_b[i] = b[i]-'0';
@@ -451,7 +453,7 @@ char *mult(char *a, char *b, char **c1, int sys)
 
     while(c[0] == '0') c++;
     if(strlen(c) == 0) c--;
-
+    //printf("c=%s\n", c);
     return c;
 }
 
@@ -466,9 +468,13 @@ char *subtr(char *a, char *b, char **c1, int sys)
     
     int dig[n+A];
     
-    //*c1 = (char *)realloc(*c1, n+A);
     *c1 = (char *)malloc(n+A);
     char *c = *c1, *a1 = (char *)malloc(n+A);
+
+    if(!*c1 || !a1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
 
     let_to_num(a);
     let_to_num(b);
@@ -509,44 +515,38 @@ char *div_help(char *a, char *b, char **c1, int sys, int *dig)
 {
     int i = 1, n = strlen(a);
 
-    //char *tmp1 = (char *)malloc(strlen(a)+A);
     *c1 = (char *)malloc(n+A);
     char *tmp1;
     char *c = *c1, *tmp = tmp1;
-    //char *tmp = (char *)malloc(strlen(a)+A);
-    //char *c = *c1;
+
+    if(!*c1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
     
     str_cpy(c, b);
  
     while(a[0] == '0') a++;
+
+    n = strlen(a);
     
-    while( strlen(c) < strlen(a) || (strlen(c) == strlen(a) && str_cmp(c, a) < 0) )
+    while( strlen(c) < n || (strlen(c) == n && str_cmp(c, a) < 0) )
     {
-        //printf("tmp1 = %s, %i\n", tmp1, &tmp1);
-        //printf("tmp = %s\n", tmp);
-        //tmp = add(c, b, &tmp, sys);
         tmp = add(c, b, &tmp1, sys);
         str_cpy(c, tmp);
         free(tmp1);
         i++;
     }
-    //printf("hello\n");
-    
+
     if(str_cmp(a, c) != 0) 
     {
         i--;
-        //tmp = subtr(c, b, &tmp, sys);
         tmp = subtr(c, b, &tmp1, sys);
         str_cpy(c, tmp);
         free(tmp1);
     }
     
     *dig = i;
-
-    //printf("tmp1 = %s\n", tmp1);
-    //printf("tmp = %s\n", tmp);
-    //free(tmp1);
-    //free(tmp);
     
     return c;
 }
@@ -558,21 +558,19 @@ char *div_(char *a, char *b, char **c1, int sys)
     m = strlen(b);
 
     if(n < m){
-        *c1 = malloc(A);
-        char *c = *c1;
-        c[0] = '0'; c[1] = '\0';
-        return c;
+        *c1 = malloc(1);
+        return "0";
     }
 
     int dig_a[n+A], dig_b[m+A], dig_curr[n+A], dig = 0;
-    
-    //*c1 = (char *)realloc(*c1, n+A);
     *c1 = (char *)malloc(n+A);
-    char *curr1 = (char *)malloc(m+A), 
-    *prev1 = (char *)malloc(m+A), *tmp1;
-    //*tmp1 = (char *)malloc(m+A);
-    //char *curr1 = (char *)malloc(m+A), *prev1 = (char *)malloc(m+A), *tmp1;
+    char *curr1 = (char *)malloc(m+A), *prev1 = (char *)malloc(m+A), *tmp1;
     char *c = *c1, *curr = curr1, *prev = prev1, *tmp = tmp1, ch;
+
+    if(!*c1 || !curr1 || !prev1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
 
     for(i=0; i<n; i++) c[i] = '0';
 
@@ -597,8 +595,6 @@ char *div_(char *a, char *b, char **c1, int sys)
         free(tmp1);
         
         c[i] = dig+'0';
-
-        //printf("%d\n", dig);
         
         tmp = subtr(prev, curr, &tmp1, sys);
         str_cpy(curr, tmp);
@@ -620,7 +616,6 @@ char *div_(char *a, char *b, char **c1, int sys)
 
     free(curr1);
     free(prev1);
-    //free(tmp1);
     
     return c;
 }
@@ -629,10 +624,13 @@ char *mod(char *a, char *b, char **c1, int sys)
 {
     int n = strlen(a), m = strlen(b);
     
-    //*c1 = (char *)realloc(*c1, n+A);
     *c1 = (char *)malloc(n+A);
-    char *tmp1 = (char *)malloc(n+A);
-    char *c = *c1, *tmp = tmp1;
+    char *c = *c1, *tmp1, *tmp;
+
+    if(!*c1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
     
     tmp = div_(a, b, &tmp1, sys);
     str_cpy(c, tmp);
@@ -654,8 +652,12 @@ char *sys_conv(int sys1, int sys2, char **b1)
     int curr = sys2, i = 0, pom[B];
 
     *b1 = (char *)malloc(B);
-    //*b1 = (char *)realloc(*b1, B);
     char *b = *b1;
+    
+    if(!*b1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
 
     while( curr != 0 )
     {
@@ -695,10 +697,14 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
     int i = 0, n = strlen(a);
     int cy[n*4+A];
     
-    //*c1 = (char *)realloc(*c1, n*4+A);
     *c1 = (char *)malloc(n*4+A);
     char *curr1 = (char *)malloc(n+A), *inv1 = (char *)malloc(n*4+A);
     char *c = *c1, *curr = curr1, *inv = inv1;
+
+    if(!*c1 || !curr1 || !inv1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
     
     str_cpy(curr, a);
 
@@ -711,7 +717,6 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
         free(*c1);
         
         c = div_(curr, b, c1, sys);
-        //str_cpy(curr, c);
         strcpy(curr, c); //TEN FRAGMENT JESZCZE DO LEPSZEGO POTESTOWANIA, 
         //ALE CHYBA MOZNA UZYC WBUDOWANEGO STRCPY, CO PRZYSPIESZA PROGRAM OK 3-KROTNIE
         free(*c1);
@@ -719,13 +724,14 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
     }
     
     int m = i;
-    //printf("%d\n%d\n%d\n", n, m, n*4+A);
-    //for(i=0; i<m; i++) c[i] = inv[m-i-1];
-    //*c1 = (char *)realloc(*c1, n*4+A);
     *c1 = (char *)malloc(n*4+A);
     c = *c1; //uzywanie jednej zmiennej do wielu rzeczy tak sie konczy :(
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!IMPORTANTTTTTT
     //DLUGO NIE USUWAC AKURAT TYCH KOMENTARZY
+    if(!*c1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
     for(i=0; i<m; i++) c[i] = inv[m-i-1];
     c[m] = '\0';
     
@@ -741,14 +747,18 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
 char *basic_pow(char *b, char *e, char **c1, int sys)
 {
     int n, m;
-    n = strlen(b);
-    m = strlen(e);
     
-    //*c1 = (char *)realloc(*c1, BIG_BUFF);
     *c1 = (char *)malloc(BIG_BUFF);
-    //char *tmp1 = (char *)malloc(BIG_BUFF), *curr_e1 = (char *)malloc(m+A);
     char *tmp1, *curr_e1 = (char *)malloc(m+A);
     char *c = *c1, *tmp = tmp1, *curr_e = curr_e1;
+    
+    if(!*c1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
+
+    n = strlen(b);
+    m = strlen(e);
     
     c[0] = '1'; c[1] = '\0';
     curr_e[0] = '0'; curr_e[1] = '\0';
@@ -767,8 +777,59 @@ char *basic_pow(char *b, char *e, char **c1, int sys)
         i++;
     }
 
-    //free(tmp1);
     free(curr_e1);
+
+    return c;
+}
+
+char *quick_pow(char *b, char *e, char **c1, int sys)
+{
+    int n, m;
+    
+    *c1 = (char *)malloc(A);
+    char *curr1 = (char *)malloc(A);
+    //char *tmp1 = (char *)malloc(A);
+    char *curr = curr1, *tmp1, *a, *e_bin, *c = *c1, *tmp;
+    //char *a, *e_bin, *c = *c1, *tmp;
+    
+    if(!*c1 || !curr || !tmp1) {
+        printf("BLAD ALOKACJI PAMIECI!\n");
+        exit(1);
+    }
+
+    if(strcmp(e, "0") == 0)
+        return "1";
+
+    a = sys_conv(sys, 2, &a);
+    e_bin = num_conv(e, a, &e_bin, sys, 2);
+    n = strlen(e_bin);
+    strcpy(curr, b);
+    if(e_bin[n-1] == '1')
+        strcpy(c, b);
+    else
+        strcpy(c, "1");
+
+    for(int i=n-2; i>=0; i--){
+        num_to_let(curr); //in preparation for mult, where let_to_num will be called twice on curr
+        tmp = mult(curr, curr, &tmp1, sys);
+        
+        free(curr1);
+        curr1 = (char *)malloc(strlen(tmp)+A);
+        curr = curr1;
+        strcpy(curr, tmp);
+        free(tmp1);
+
+        if(e_bin[i] == '1'){
+            tmp = mult(c, curr, &tmp1, sys);
+            free(*c1);
+            *c1 = (char *)malloc(strlen(tmp)+A);
+            c = *c1;
+            strcpy(c, tmp);
+            free(tmp1);
+        }
+    }
+
+    free(a); free(e_bin);
 
     return c;
 }

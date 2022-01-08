@@ -52,11 +52,23 @@ int main(int argc, char *argv[])
 {
     FILE *in, *out;
     in = fopen("in.txt", "r");
-    if(argc == 1) out = fopen("out.txt", "w");
+    out = fopen("out.txt", "w");
     
-    char *a, *b, *c, *bin, *line, op, file_name[B], file_index[B];
+    char *a, *b, *c, *bin, *line, op, file_name[B], file_index[B], tryb;
     int sys, sys1, sys2, n, m, line_len, err, i = 1;
     
+    printf("Witaj w programie kalkulator!\n\n\n");
+    printf("Instrukcja użytkowania:\n\nPlik wejsciowy powinien miec nazwe 'in.txt'.\n\n");
+    printf("Program ma dwa tryby pracy:\n[1] zapisuje wszystkie wyniki w jednym pliku o nazwie 'out.txt'\n");
+    printf("[2] zapisuje wyniki kazdej operacji w odzielnym pliku postaci 'out<nr_op>.txt', np. 'out1.txt', 'out2.txt' itd.\n\n");
+    printf("Naciśnij klawisz 1 lub 2, aby wybrac odpowiednia opcje i zatwierdz uzywajac Enter:\n");
+    
+    tryb = getchar();
+    if(tryb == '1')
+        printf("\nWybrales tryb zapisu w jednym pliku.\n\n\n");
+    else if(tryb == '2')
+        printf("\nWybrales tryb zapisu w wielu plikach.\n\n\n");
+    printf("Obliczenia zostaly rozpoczete, prosze czekac.\n\n\n");
     while(1)
     {
         line = read(in, L);
@@ -68,7 +80,9 @@ int main(int argc, char *argv[])
         line[line_len] = '\0';
         line_len = strlen(line);
 
-        if( argc == 2 && str_cmp(argv[1], "1") == 0 )
+        printf("Operacja %d ... ", i);
+
+        if(tryb == '2')
         {
             str_cpy(file_name, "out");
             file_index[0] = i+'0'; file_index[1] = '\0';
@@ -180,7 +194,6 @@ int main(int argc, char *argv[])
         }
         else if(op == '^') 
         {
-            //fprintf(out, "%s\n\n", basic_pow(a, b, &c, sys));
             fprintf(out, "%s\n\n", quick_pow(a, b, &c, sys));
         }
         else 
@@ -192,10 +205,10 @@ int main(int argc, char *argv[])
         
         free(a); free(b); 
         free(c);
-        free(line); 
-        //free(bin);
+        free(line);
+        printf("wykonana\n");
     }
-    
+    printf("\n\nProgram zakonczyl dzialanie. Wcisnij dowolny klawisz, aby wyjsc.\n");
     return 0;
 }
 
@@ -204,7 +217,6 @@ char *read(FILE* file, size_t base_len)
     char *str;
     int ch;
     size_t len = 0;
-    //str = realloc(NULL, base_len);
     str = (char *)malloc(base_len);
     ch=getc(file);
     while(EOF != ch && ch != '\n')
@@ -356,7 +368,7 @@ char *add(char *a, char *b, char **c1, int sys)
     *c1 = (char *)malloc(n+A);
     char *c = *c1;
     if(!*c1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA ADD)!\n");
         exit(1);
     }
 
@@ -394,7 +406,6 @@ char *add(char *a, char *b, char **c1, int sys)
 
 char *mult(char *a, char *b, char **c1, int sys)
 {
-    //printf("|%s|\n|%s|\n|%d|\n", a, b, sys);
     int n, m, i, j, i_c;
     
     n = strlen(a);
@@ -402,14 +413,13 @@ char *mult(char *a, char *b, char **c1, int sys)
 
     let_to_num(a);
     let_to_num(b);
-    //if(a != b) let_to_num(b);
 
     int dig_a[n+A], dig_b[m+A], dig[n+m+A], dig_main[n+m+A];
     
     *c1 = (char *)malloc(n+m+A);
     char *c = *c1;
     if(!*c1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA MULT)!\n");
         exit(1);
     }
 
@@ -453,7 +463,6 @@ char *mult(char *a, char *b, char **c1, int sys)
 
     while(c[0] == '0') c++;
     if(strlen(c) == 0) c--;
-    //printf("c=%s\n", c);
     return c;
 }
 
@@ -472,7 +481,7 @@ char *subtr(char *a, char *b, char **c1, int sys)
     char *c = *c1, *a1 = (char *)malloc(n+A);
 
     if(!*c1 || !a1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA SUBTR)!\n");
         exit(1);
     }
 
@@ -520,7 +529,7 @@ char *div_help(char *a, char *b, char **c1, int sys, int *dig)
     char *c = *c1, *tmp = tmp1;
 
     if(!*c1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA DIV_HELP)!\n");
         exit(1);
     }
     
@@ -568,7 +577,7 @@ char *div_(char *a, char *b, char **c1, int sys)
     char *c = *c1, *curr = curr1, *prev = prev1, *tmp = tmp1, ch;
 
     if(!*c1 || !curr1 || !prev1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA DIV)!\n");
         exit(1);
     }
 
@@ -628,7 +637,7 @@ char *mod(char *a, char *b, char **c1, int sys)
     char *c = *c1, *tmp1, *tmp;
 
     if(!*c1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA MOD)!\n");
         exit(1);
     }
     
@@ -655,7 +664,7 @@ char *sys_conv(int sys1, int sys2, char **b1)
     char *b = *b1;
     
     if(!*b1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA SYS_CONV)!\n");
         exit(1);
     }
 
@@ -697,12 +706,11 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
     int i = 0, n = strlen(a);
     int cy[n*4+A];
     
-    *c1 = (char *)malloc(n*4+A);
     char *curr1 = (char *)malloc(n+A), *inv1 = (char *)malloc(n*4+A);
-    char *c = *c1, *curr = curr1, *inv = inv1;
+    char *c, *curr = curr1, *inv = inv1;
 
-    if(!*c1 || !curr1 || !inv1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+    if(!curr1 || !inv1) {
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA NUM_CONV)!\n");
         exit(1);
     }
     
@@ -717,19 +725,16 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
         free(*c1);
         
         c = div_(curr, b, c1, sys);
-        strcpy(curr, c); //TEN FRAGMENT JESZCZE DO LEPSZEGO POTESTOWANIA, 
-        //ALE CHYBA MOZNA UZYC WBUDOWANEGO STRCPY, CO PRZYSPIESZA PROGRAM OK 3-KROTNIE
+        strcpy(curr, c);
         free(*c1);
         i++;
     }
     
     int m = i;
     *c1 = (char *)malloc(n*4+A);
-    c = *c1; //uzywanie jednej zmiennej do wielu rzeczy tak sie konczy :(
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!IMPORTANTTTTTT
-    //DLUGO NIE USUWAC AKURAT TYCH KOMENTARZY
+    c = *c1;
     if(!*c1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA NUM_CONV)!\n");
         exit(1);
     }
     for(i=0; i<m; i++) c[i] = inv[m-i-1];
@@ -744,56 +749,16 @@ char *num_conv(char *a, char *b, char **c1, int sys, int sys2)
     return c;
 }
 
-char *basic_pow(char *b, char *e, char **c1, int sys)
-{
-    int n, m;
-    
-    *c1 = (char *)malloc(BIG_BUFF);
-    char *tmp1, *curr_e1 = (char *)malloc(m+A);
-    char *c = *c1, *tmp = tmp1, *curr_e = curr_e1;
-    
-    if(!*c1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
-        exit(1);
-    }
-
-    n = strlen(b);
-    m = strlen(e);
-    
-    c[0] = '1'; c[1] = '\0';
-    curr_e[0] = '0'; curr_e[1] = '\0';
-    
-    int i = 0;
-    while( str_cmp(e, curr_e) != 0 )
-    {
-        tmp = mult(c, b, &tmp1, sys);
-        str_cpy(c, tmp);
-        free(tmp1);
-        
-        tmp = add(curr_e, "1", &tmp1, sys);
-        str_cpy(curr_e, tmp);
-        free(tmp1);
-        
-        i++;
-    }
-
-    free(curr_e1);
-
-    return c;
-}
-
 char *quick_pow(char *b, char *e, char **c1, int sys)
 {
     int n, m;
     
-    *c1 = (char *)malloc(A);
-    char *curr1 = (char *)malloc(A);
-    //char *tmp1 = (char *)malloc(A);
-    char *curr = curr1, *tmp1, *a, *e_bin, *c = *c1, *tmp;
-    //char *a, *e_bin, *c = *c1, *tmp;
-    
-    if(!*c1 || !curr || !tmp1) {
-        printf("BLAD ALOKACJI PAMIECI!\n");
+    *c1 = (char *)malloc(strlen(b)+A);
+    char *curr1 = (char *)malloc(strlen(b)+A);
+    char *tmp1, *e_bin1, *a, *e_bin, *c = *c1, *tmp, *curr = curr1;
+
+    if(!*c1 || !curr) {
+        printf("BLAD ALOKACJI PAMIECI (FUNKCJA QUICK_POW)!\n");
         exit(1);
     }
 
@@ -801,13 +766,13 @@ char *quick_pow(char *b, char *e, char **c1, int sys)
         return "1";
 
     a = sys_conv(sys, 2, &a);
-    e_bin = num_conv(e, a, &e_bin, sys, 2);
+    e_bin = num_conv(e, a, &e_bin1, sys, 2);
     n = strlen(e_bin);
-    strcpy(curr, b);
+    str_cpy(curr, b);
     if(e_bin[n-1] == '1')
-        strcpy(c, b);
+        str_cpy(c, b);
     else
-        strcpy(c, "1");
+        str_cpy(c, "1");
 
     for(int i=n-2; i>=0; i--){
         num_to_let(curr); //in preparation for mult, where let_to_num will be called twice on curr
@@ -816,7 +781,7 @@ char *quick_pow(char *b, char *e, char **c1, int sys)
         free(curr1);
         curr1 = (char *)malloc(strlen(tmp)+A);
         curr = curr1;
-        strcpy(curr, tmp);
+        str_cpy(curr, tmp);
         free(tmp1);
 
         if(e_bin[i] == '1'){
@@ -824,12 +789,12 @@ char *quick_pow(char *b, char *e, char **c1, int sys)
             free(*c1);
             *c1 = (char *)malloc(strlen(tmp)+A);
             c = *c1;
-            strcpy(c, tmp);
+            str_cpy(c, tmp);
             free(tmp1);
         }
     }
 
-    free(a); free(e_bin);
+    free(a); free(e_bin1); free(curr1);
 
     return c;
 }

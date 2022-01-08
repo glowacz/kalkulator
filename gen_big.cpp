@@ -6,8 +6,8 @@ const int N = 9000;
 const int N1 = 30;
 const int N2 = 900;
 const int N3 = 100;
-const int B = 15;
-const int E = 2;
+const int B = 20;
+const int E = 3;
 const int O = 100;
 
 string op = "+*-/%^k";
@@ -34,7 +34,7 @@ int main(){
     6 konw
     */
     
-    uniform_int_distribution<> wyb_op(3, 3);
+    uniform_int_distribution<> wyb_op(5, 5);
     uniform_int_distribution<> wyb_sys(2, 16);
     //uniform_int_distribution<> wyb_sys(10, 10);
     //uniform_int_distribution<> dl(N-N2, N);

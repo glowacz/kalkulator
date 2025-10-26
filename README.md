@@ -1,104 +1,125 @@
-# kalkulator
+# Calculator
 
-Aplikacja konsolowa o funkcjonalności kalkulatora. Działa dla bardzo dużych liczb (wyniki działań rzędu 10^7 cyfr). Głównym celem projektu była nauka zarządzania pamięcią.
+A console application that functions as a calculator. It handles very large numbers (results up to about 10⁷ digits). The main goal of the project was to practice manual memory management.
 
-1. Uruchomienie programu
+---
 
-Program jest zwykłą aplikacją konsolową - plikiem wykonywalnym o nazwie "kalk.exe", zatem można uruchomić go poprzez kliknięcie na plik wykonywalny. 
-Inną możliwością jest odpalenie go z poziomu wiersza poleceń (poprzez wpisanie "kalk.exe").
-Oczywiście zintegrowane środowiska programistyczne także umożliwiają odpalenie programu.
+## 1. Running the Program
 
-W folderze z programem powinien się znajdować plik "in.txt", zawierający dane wejściowe.
+- The program is a plain console app—an executable named `kalk.exe`. You can launch it by double-clicking the file.
+- Alternatively, run it from the command line by typing:
+  ```
+  kalk.exe
+  ```
+- You can also start it from any IDE that supports console executables.
+- In the same folder as the executable, there should be an input file named `in.txt`.
 
-Istnieje opcja podania mu argumentu, jeśli będzie to "1" ("kalk.exe 1")to wypisze każdą operację do osobnego pliku ("out1.txt", "out2.txt" itd.).
-W przeciwnym przypadku wypisze wszystkie odpowiedzi do pliku "out.txt".
+Optional argument:
+- If you run
+  ```
+  kalk.exe 1
+  ```
+  then each operation’s result will be written into its own file (`out1.txt`, `out2.txt`, …).
+- Otherwise, all answers go into a single file named `out.txt`.
 
+---
 
-2. Obsługa błędnych danych
+## 2. Handling Invalid Input
 
-Program sprawdza, czy ciągi znaków na wejściu są poprawnymi liczbami w danym systemie.
-Jeśli nie są, wypisuje komunikat "NaN" w miejscu wyniku.
+The program checks each input token to see if it’s a valid number in the specified base. If it’s not, the output for that operation is  
+```
+NaN
+```
 
-Sprawdza także, czy nie zachodzi próba dzielenia przez zero i wypisuje komunikat "DIVISION_BY_ZERO".
+It also guards against division by zero:
+```
+DIVISION_BY_ZERO
+```
 
-Za błędne dane uznaje liczby zawierające zera wiodące (ale "0" jest poprawną liczbą w każdym systemie) i wypisuje komunikat "TRAILING_ZEROES".
+Leading zeros (except for the number “0” itself) are treated as an error:
+```
+TRAILING_ZEROES
+```
 
-Zawiera też obsługę odejmowania i w tym celu sprawdza, czy nie próbujemy odjąć większej liczby od mniejszej, wtedy wypisuje komunikat "SUBTRACTING_BIGGER_NUMBER_FROM_SMALLER".
+When performing subtraction, if you try to subtract a larger number from a smaller one, it outputs:
+```
+SUBTRACTING_BIGGER_NUMBER_FROM_SMALLER
+```
 
-W każdym z powyższych przypadków program nie kończy swojego działania, tylko wypisuje komunikat i przechodzi do kolejnej operacji z pliku wejściowego.
+In every error case, the program does **not** abort; it prints the error message and moves on to the next operation in the input file.
 
+---
 
-3a. Dane wejściowe
+## 3a. Input Format
 
-Program czyta dane z pliku o nazwie "in.txt".
+All input is read from `in.txt`. Two modes are supported:
 
-Powinien on zawierać dane w formacie:
+1. **Arithmetic operation**  
+   ```
+   <operator> <base>
+   <number1>
+   <number2>
+   
+   <more operations…>
+   ```
+   - `<operator>` ∈ { +, *, /, %, ^, − }  (supports exponentiation “^” and subtraction “−”)
+   - `<base>` is an integer in [2 – 19]
 
-<operacja arytmetyczna> <system>
+2. **Base conversion**  
+   ```
+   <input_base> <output_base>
+   <number>
+   
+   <more conversions…>
+   ```
+   - Both bases are integers in [2 – 19].
 
-<liczba1>
+Note: While the program generally handles LF line endings, it prefers Windows-style CRLF.
 
-<liczba2>
+---
 
+## 3b. Output Format
 
-<dalsze dane>
+By default, results go to `out.txt`. If you pass the argument `1` to the executable, each operation is written to its own file (`out1.txt`, `out2.txt`, etc.).
 
-lub
+The format mirrors the input block:
 
-<system wejściowy> <system wyjściowy>
+1. **Arithmetic operation**  
+   ```
+   <operator> <base>
+   <number1>
+   <number2>
+   <result>
+   
+   <more results…>
+   ```
 
-<liczba>
+2. **Base conversion**  
+   ```
+   <input_base> <output_base>
+   <number>
+   <result>
+   
+   <more results…>
+   ```
 
+---
 
-<dalsze dane>
+## 4. Compilation
 
-<operacja arytmetyczna> należy do zbioru {+, *, /, %, ^, -} (obsługuje również odejmowanie)
-<system wejściowy> lub <system wyjściowy> to liczba z przedziału 2-19
+Compile the program with GCC using optimization level 3:
+```
+gcc -O3 -o kalk kalk.c
+```
 
-Pewnym niuansem jest kodowanie znaku końca linii. Choć program z reguły działa poprawnie na pliku wejściowym z kodowaniem LF (linuxowym), to preferowane jest kodowanie CRLF (windowsowe).
+---
 
+## 5. Program Structure
 
-3b. Dane wyjściowe
-
-Program domyślnie wypisuje dane do pliku "out.txt", jednak gdy dostanie przy wykonywaniu argument "1" to wypisze każdą operację do osobnego pliku ("out1.txt", "out2.txt" itd.).
-
-Dane są wypisane w formacie
-
-<operacja arytmetyczna> <system>
-
-<liczba1>
-
-<liczba2>
-
-<wynik>
-
-<dalsze odpowiedzi>
-
-lub
-
-<system wejściowy> <system wyjściowy>
-
-<liczba>
-
-<wynik>
-
-<dalsze odpowiedzi>
-
-
-4. Kompilacja
-
-Osobiście kompilowałem program za pomocą gcc i z flagą o3:
-gcc -o3 -o kalk kalk.c
-
-
-5. Struktura programu
-
-Program deklaruje początkowe zmienne, w szczególności tworzy zmienne typu FILE* i otwiera odpowiednie pliki.
-
-Następnie, aż do napotkania pustej linii wykonuje następujące operacje:
--wczytanie linijki z operacją arytmetyczną i systemem liczbowym lub dwoma systemami liczbowymi
--rozpoznanie, czy ma wykonać operację arytmetyczną czy konwersję liczby z jednego systemu na drugi
--wczytanie liczb(y)
--wykonanie odpowiedniej operacji
-
-Na końcu czyści pamięć.
+1. Declare initial variables (including several `FILE*`) and open the necessary files.
+2. In a loop (until an empty line is encountered):
+   - Read the line describing either an arithmetic operation with its base or two bases for conversion.
+   - Determine whether to perform an arithmetic operation or a base conversion.
+   - Read the required number(s).
+   - Execute the requested operation.
+3. Clean up all allocated memory and close files before exiting.
